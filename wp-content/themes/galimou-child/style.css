@@ -1,0 +1,1132 @@
+/*
+Theme Name: Galimou Child
+Text Domain: bbcrm
+template: galimou
+*/
+
+@import url('../galimou/style.css');
+@import url('style-themecolors.css');
+@import url("https://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css");
+@import url('margins-paddings-alignments.css');
+
+/* =Reset default browser CSS. Based on work by Eric Meyer: http://meyerweb.com/eric/tools/css/reset/index.html
+-------------------------------------------------------------- */
+
+@media print{
+header, footer, .portfolio_group h2,#intro{display:none}
+.sidebar_search_by_id_container,#accordion,#businesslinks,.clicktoggle,#leftsidebar,#webcontactbroker,.request-save {display:none !important}
+#top-horizontal-grey-div{border:none}
+.al-title {font-size:30pt !important;line-height:initial !important}
+#agreement{display:block;width:100%;height:100%}
+.galleria {margin:0 !important;height:300px!important;}
+.galleria-container{width:auto !important;max-width:100%;height:300px!important;clear:both}
+}
+
+.subNavRow {
+	width: 100% !important;
+}
+
+.well {padding: 0 20px;}
+
+#logo{height:79px;width:187px;background:url('/wp-content/uploads/2016/05/ABS-Business-Sales-e1469352200589.png');overflow:hidden;margin:0}
+
+ul.left-bar-side{
+font-size:11px;
+text-transform:uppercase;
+}
+
+#form1 label {
+    width: 190px!important;
+    display: inline-block;
+    text-align: right!important;
+}
+
+.bqreg {
+    padding-left: 36px !important;
+}
+
+.brokerprofilebutton {
+    margin-top: 10px;
+    display: block;
+}
+
+.contact-submit input{
+    width: 100px;
+    height: 30px;
+    background-color: #0052a0;
+    font-size: 13px;
+    color: #fff;
+    border: 1px solid #fff;
+    border-radius: 5px;
+}
+
+.contact-description input,.contact-description textarea{
+	width: 320px;
+}
+
+.au_submenu {
+    color: black;
+    background-color: #f1f1f1;
+    font-family: Arial,"Helvetica Neue",Helvetica,sans-serif;
+    font-size: 12px;
+    width: 1170px !important;
+    margin: 0 auto;
+    position: relative;
+}
+
+.au_submenu li {
+    display: inline-flex;
+    border-right: 1px solid #ddd; 
+}
+
+.au_submenu a:link,
+
+.au_submenu a:visited {
+	color:#000;
+	padding:10px;
+        text-decoration: none;
+}
+
+.au_submenu a:active {
+	background:#333;
+	color:#fff;
+}
+
+.au_submenu a:hover,
+
+.au_submenu a:focus {
+ background-color:#ddd !important;
+}
+
+.au_submenu > ul > li:not( :last-child )>a {
+    border-right: 1px solid #d2d1d1;
+}
+
+.au_submenu>ul>li>a {
+    padding: 0 8px;
+    display: block;
+    font-size: 12px;
+    height: 36px;
+    line-height: 34px;
+    color: blue;
+}
+
+.au_submenu>ul>li:hover>a, .au_submenu>ul>li.currentPage>a {
+     background-color: #333;
+    color: red;
+    text-decoration: none;
+}
+
+.au_submenu {
+    color: #333;
+    background-color: #f1f1f1;
+    width: 100%;
+    font-family: Arial,"Helvetica Neue",Helvetica,sans-serif;
+    font-size: 14.7px;
+    padding-left: 0 !important;
+}
+
+.menu-confidentiality-agreement-container,
+.menu-business-container,
+.menu-sub-commercial-container,
+.menu-sub-contact-container,
+.menu-sub-free-appraisal-container,
+.menu-sub-business-container,
+.menu-sub-registration-container,
+.menu-sub-blog-container,
+.menu-sub-home-container,
+.menu-sub-conf-agreement-container {
+    background-color:#f1f1f1 !important;
+    width:100% !important;
+}
+
+li.current_page_item { background-color:#d2d1d1;}
+
+.content {
+    margin-top:-20px !important;
+}
+
+#sub_business li.selected a { color: red; }
+
+.au_sitemap {
+    color: blue;
+}
+
+#propertydetails { position: relative;}
+
+#confidential_files {
+	margin: 20px 0 10px 0 ;
+	border:solid 2px #8BA8E0;
+	border-radius: 5px;
+	padding: 10px;	
+}
+
+#confidential_files a:hover {
+	text-decoration: none;
+	color:#ed1c24;
+}
+
+#confidential_files i.fa {
+	font-size: 20px!important;
+    padding-top: 3px;
+    color:#0052a0;
+}
+
+#confidential_files a:hover i.fa{
+	color:#ed1c24;
+}
+
+/**    Sidebar Categories Search    **/
+
+#searchForm {
+    padding: 0;
+}
+
+.sidebar_categories_button {
+    font-weight: bold;
+}
+
+.sidebar_categories_button:hover {
+    cursor: pointer;
+}
+
+.parent_category_title:hover {
+    cursor: pointer;
+}
+
+.sidebar_categories_button .fa {
+    position: absolute;
+    margin-left: 10px;
+}
+
+.sidebar_categories_container {
+    background: #f8f8f8;
+    border: 1px solid #eee;
+    margin-top: 5px;
+}
+
+.child_category_container {
+    display: none;
+}
+
+.parent_category_title {
+    font-weight: bold;
+    font-size: 14px;
+    color: rgb(65, 64, 64);
+    padding: 5px;
+    border-bottom: 1px solid #eee;
+}
+
+.child_category_container {
+    display: none;
+    background: #fff;
+    padding: 10px 10px 10px 15px;
+}
+
+.child_category_container label {
+    font-weight: normal;
+    display: block;
+    font-size: 14px;
+}
+
+.child_category_container label:hover {
+    cursor: pointer;
+}
+
+.selected_number_of_categories {
+    font-weight: normal;
+    font-size: 14px;
+}
+
+#searchForm input[type="checkbox"] {
+    width: auto;
+}
+
+.sidebar_search_form input {
+    width: 84%;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    padding: 4px 3px;
+    border-radius: 4px;
+}
+
+.sidebar_search_form input[type="checkbox"] {
+    width: auto;
+}
+
+.sidebar_search_form select {
+    display: block;
+    width: 100%;
+    background-image: linear-gradient(to bottom, #fff 0%, #e6e6e6 100%);
+    background-repeat: repeat-x;
+    border-color: #ccc;
+    border-radius: 4px;
+    padding: 2px 5px 2px 10px;
+}
+
+select option {
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.form_group {
+    margin-bottom: 15px;
+}
+
+.panel-body {
+    border: 1px solid #eee;
+    border-top: 0;
+    padding: 15px 15px 5px 15px;
+    margin-bottom: 20px;
+}
+
+.panel-default {
+    border: 0;
+    border-radius: 0;
+}
+
+.panel-default>.panel-heading {
+    border: 1px solid #eee;
+    border-width: 1px 1px 0 1px;
+    border-radius: 0;
+    background: #f8f8f8;
+    color: #414040;
+    margin: 0;
+    padding: 5px 15px;
+    display: block;
+    cursor: pointer;
+    position: relative;
+}
+
+h3.panel-title {
+    font-size: 24.5px;
+}
+
+.panel-title .glyphicon:before {
+    font-size: 16px;
+    position: relative;
+    top: 2px;
+}
+
+.sidebar_search_by_id_container {
+    background-color: #f1f1f1;
+    padding: 10px 18px 18px 18px;
+}
+
+.search_by_id_form {
+    margin-left: -15px !important;
+    margin-right: -15px !important;
+}
+
+.id_search_submit.btn {
+    padding: 5px 12px;
+}
+
+.panel-default > .panel-heading + .panel-collapse .panel-body {
+    border: 0;
+    margin: 0;
+}
+
+.panel-default>.panel-heading {
+    border-bottom: 1px solid #ddd;    
+}
+
+.panel-group .panel {
+    border: 1px solid #ddd;
+}
+
+
+/**   Listing Search Result   **/
+
+.sidebar_content {
+    min-width:280px !important;
+    max-width:285px;
+    margin-top: 40px;
+}
+
+.searchlists_container {
+    margin-top: 20px;
+}
+
+.searchpage_main_content_row {
+    max-width: 1200px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+.listing_search_result {
+    border: 1px solid #ddd;
+    padding: 0;
+    margin: 20px 1px;
+}
+
+.listing_search_result > .row > .col-md-3 {
+    padding-left: 0;
+}
+
+.listing_search_result > .row > .col-md-9 {
+    padding: 10px 10px  0 0;
+    position: relative;
+}
+
+.listing_add_to_port_buttton {
+    float: right;
+    margin-top: -10px;
+    margin-right: -10px;
+}
+
+.searchlisting_currency_id {
+    width: auto;
+    font-size: 16px;
+    font-weight: bold;
+    clear: both;
+    color: #0052a0;
+    border-left: 2px solid #0052a0;
+    margin-left: 10px;
+    padding-left: 11px;
+}
+
+.searchlisting_region {
+    color: #333;
+    font-size: 16px;
+    width:auto;
+    margin-top: 5px;
+}
+
+.searchlisting_featured_image {
+    height: 180px;
+    overflow: hidden;
+}
+
+.searchlisting_featured_image img {
+    max-height: 113%;
+}
+
+.searchlisting_name {
+    color:#c4202b;
+    font-size:1.3em;
+    text-align: left;
+    padding-right: 7px;
+    display:inline-block;
+}
+
+.searchlisting_description {
+    color: #807e7e;
+    margin-top: 5px;
+}
+
+.searchlisting_bottom_category {
+    margin-top: 10px;
+}
+
+.searchlisting_bottom_category a,
+.searchlisting_bottom_category a:hover,
+.searchlisting_bottom_category a:focus,
+.searchlisting_bottom_category a:active {
+    color: #ffffff;
+    padding: 5px 7px;
+    font-size: 13px;
+    font-style: italic;
+    margin-right: 10px;
+    text-decoration: none;
+}
+
+.searchlisting_save_ca {
+	float: right;
+	background: #e0e0e0;
+	padding: 4px 8px;
+	font-size: 12px;
+	margin-top: -10px;
+	margin-right: -10px;
+}
+
+
+/**    Archive Listing    **/
+
+#top-horizontal-grey-div{
+	background-color:#f5f5f5; border:1px solid #ddd; padding:13px;min-height:165px !important;
+}
+
+.al-title { 
+	font-family:'Roboto',Tahoma,Verdana,Segoe,sans-serif; font-weight:300; display:inline-block; text-align:left; clear:none; width:100% height:auto; margin-top: 0; line-height: 18px;font-size: 20px;color: #000; padding: 3px 0;
+}
+
+.al-price {
+	font-family: 'Roboto',Tahoma,Verdana,Segoe,sans-serif; display:inline-block; text-align:left; width:250px; height:auto; font-size: 17.5px; font-weight: 700; margin:10px 0;
+}
+
+.al-id {
+	display:inline-block;  float:right; text-align:right; clear:right; width:250px;height:auto;
+}
+
+.al-region {
+	display:inline-block;  float:right; clear:right; text-align:right; width:250px; height:auto;
+}
+
+.al-cat {
+	display:inline-block; text-align:center; width:auto; height:30px; font-style:italic; color:#fff; background-color:#0052a1; font-size: 13px; padding: 6px 10px  3px 5px; 
+}
+
+.al-status {
+	display:inline-block; float:right; clear:right; text-align:right; width:250px; height:auto;
+}
+
+.al-agent-image {
+    float: left;
+    display: block;
+    width: 110px;
+    border-right: 15px solid #fff;
+    border-bottom: 5px solid #fff;
+    background-color:#ddd;
+}
+
+.footer_main {
+	display: inline-block;
+}
+
+#footer-sidebar1 {
+	vertical-align: top;
+	display: inline-block;
+	max-width: 55%;
+    margin-left: 0;
+    font-size:17px;
+}
+
+#footer-sidebar2 {
+	vertical-align: top;
+	display: inline-block;
+	max-width: 20%;
+    font-size:17px;
+}
+
+#footer-sidebar3 {
+	margin-left: 5px;
+	vertical-align: top;
+	display: inline-block;
+	max-width: 20%;
+    font-size:17px;
+}
+
+#footer-sidebar {
+    display: inline-block;
+    height: 250px;
+    margin-left: 17px;
+}
+
+.panel-heading .accordion-toggle:after {
+    font-family: 'Glyphicons Halflings'; 
+    content:"\e027"; 
+    float: right;     
+    color: #525252;  
+    font-weight: 200;  
+    font-size: 18px; 
+    padding-top:2px;
+    vertical-align:center;
+}
+
+.panel-heading .accordion-toggle.collapsed:after {
+    content:"\e026";   
+}
+
+a.normalLink:hover, a:hover {
+   text-decoration: none;
+}
+
+a.normalLink:hover, a: {
+   text-decoration: none;
+}
+
+a:hover, a:focus {
+  text-decoration: none;
+}
+
+.contactList li.address {
+    background-position: 0 -2px;
+}
+
+.contactList li {
+    background: url('/t/add-icons.png') no-repeat;
+    padding-left: 29px;
+    min-height: 25px;
+}
+
+.contact-submit input {
+    background-color: black; 
+}
+
+#firstName,
+#lastName,
+#city,
+#country,
+#state,
+#postcode {
+    color: #000 !important;
+    /*width: 100% !important;*/
+}
+
+#address {color: #000 !important;}
+
+roError, .roErrors {
+    display: block;
+    font-size: 90%;
+}
+
+.roError, .roErrors, .error {
+    color: #B00000;font-size: 90%;
+}
+
+.site_map_submenu li.current_page_item {background-color: #fff !important; }
+
+h4 {color:#333 !important;}
+
+.profileDisplay {
+  width: 104%;
+}
+
+/**    Background colours for Categories tags    **/
+
+.searchlisting_bottom_category a {
+    display: table;
+    float: left;
+}
+
+.searchlisting_bottom_category .accommodation_tourism {
+    background: red;
+}
+
+.searchlisting_bottom_category .automotive {
+    background: blue;
+}
+
+.searchlisting_bottom_category .beauty_health {
+    background: green;
+}
+
+.searchlisting_bottom_category .business_property {
+    background: yellow;
+}
+
+.searchlisting_bottom_category .education_training {
+    background: orange;
+}
+
+.searchlisting_bottom_category .food_hospitality {
+    background: brown;
+}
+
+.searchlisting_bottom_category .franchise {
+    background: #90D4A2;
+}
+
+.searchlisting_bottom_category .home_garden {
+    background: #D490C2;
+}
+
+.searchlisting_bottom_category .import_export_whole {
+    background: #D4C490;
+}
+
+.searchlisting_bottom_category .industrial_manufacturing {
+    background: #909AD4;
+}
+
+.searchlisting_bottom_category .leisure_entertainment {
+    background: #909AD4;
+}
+
+.searchlisting_bottom_category .professional {
+    background: #1EE3D9;
+}
+
+.searchlisting_bottom_category .retail {
+    background: #144A47;
+}
+
+.searchlisting_bottom_category .rural {
+    background: #B6CC39;
+}
+
+.searchlisting_bottom_category .services {
+    background: #CC8C39;
+}
+
+.searchlisting_bottom_category .transport_distribution {
+    background: #A7D490;
+}
+
+/**    End of background colours for Categories tags    **/
+
+
+blockquote {
+    margin-top: 50px;
+}
+
+.for_sale_by_industry_top_title {
+    margin-top: 30px;
+}
+
+.for_sale_by_industry_bottom_phrase {
+    margin-top: 50px !important;
+    padding: 10px 0 10px 30px;
+    border-left: 5px solid #eee;
+}
+
+.for_sale_by_industry_parent {
+    margin: 30px 0 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.for_sale_by_industry_category,
+.for_sale_by_industry_category:hover,
+.for_sale_by_industry_category:focus {
+    color: #000;
+    text-decoration: none;
+    font-size: 13px;
+    padding: 3px 8px;
+    font-style: italic;
+    margin-right: 5px;
+    margin-top: 10px;
+    display: inline-block;
+}
+
+.for_sale_by_industry_category.accommodation_tourism {
+    background: red;
+}
+
+.for_sale_by_industry_category.automotive {
+    background: blue;
+}
+
+.for_sale_by_industry_category.beauty_health {
+    background: green;
+}
+
+.for_sale_by_industry_category.business_property {
+    background: yellow;
+}
+
+.for_sale_by_industry_category.education_training {
+    background: orange;
+}
+
+.for_sale_by_industry_category.food_hospitality {
+    background: brown;
+}
+
+.for_sale_by_industry_category.franchise {
+    background: #90D4A2;
+}
+
+.for_sale_by_industry_category.home_garden {
+    background: #D490C2;
+}
+
+.for_sale_by_industry_category.import_export_whole {
+    background: #D4C490;
+}
+
+.for_sale_by_industry_category.industrial_manufacturing {
+    background: #909AD4;
+}
+
+.for_sale_by_industry_category.leisure_entertainment {
+    background: #909AD4;
+}
+
+.for_sale_by_industry_category.professional {
+    background: #1EE3D9;
+}
+
+.for_sale_by_industry_category.retail {
+    background: #144A47;
+}
+
+.for_sale_by_industry_category.rural {
+    background: #B6CC39;
+}
+
+.for_sale_by_industry_category.services {
+    background: #CC8C39;
+}
+
+.for_sale_by_industry_category.transport_distribution {
+    background: #A7D490;
+}
+
+/* Base for label styling */
+.checkbox_container {
+    position: relative;
+    display: table;
+}
+
+.franchise_checkbox:not(:checked),
+.franchise_checkbox:checked {
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
+  width: 100% !important;
+  height: 100%;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.franchise_checkbox:not(:checked) + label,
+.franchise_checkbox:checked + label {
+  position: relative;
+  padding-left: 25px;
+  cursor: pointer;
+}
+
+/* checkbox aspect */
+.franchise_checkbox:not(:checked) + label:before,
+.franchise_checkbox:checked + label:before {
+  content: '';
+  position: absolute;
+  left:0; top: 2px;
+  width: 17px; height: 17px;
+  border: 1px solid #aaa;
+  background: #f8f8f8;
+  border-radius: 3px;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.3)
+}
+
+/* checked mark aspect */
+.franchise_checkbox:checked + label:after {
+  content: '✔';
+  position: absolute;
+  top: 3px; left: 4px;
+  font-size: 18px;
+  line-height: 0.8;
+  color: #2aabd2;
+  transition: all .2s;
+}
+
+/* checked mark aspect changes */
+.franchise_checkbox:not(:checked) + label:after {
+  opacity: 0;
+  transform: scale(0);
+}
+
+.franchise_checkbox:checked + label:after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* disabled checkbox */
+.franchise_checkbox:disabled:not(:checked) + label:before,
+.franchise_checkbox:disabled:checked + label:before {
+  box-shadow: none;
+  border-color: #bbb;
+  background-color: #ddd;
+}
+
+.franchise_checkbox:disabled:checked + label:after {
+  color: #999;
+}
+
+.franchise_checkbox:disabled + label {
+  color: #aaa;
+}
+
+/* accessibility */
+.franchise_checkbox:checked:focus + label:before,
+.franchise_checkbox:not(:checked):focus + label:before {
+  border: 1px dotted blue;
+}
+
+/* hover style just for information */
+.franchise_checkbox:hover + label:before {
+  border: 1px solid #2aabd2!important;
+}
+
+/** Contact Page Maps **/
+
+.wpgmp_map_container {
+    padding: 10px;
+    border: 1px solid #d8d8d8;
+    margin-top: 30px;
+}
+
+.wpgmp_map_container .wpgmp_map {
+    max-width: 100%;
+}
+
+.compBanner {
+    margin-left: 0;
+}
+
+/** Free Business Appraisal Form Container **/
+.free_bus_appraisal_form_container {
+    clear: both;
+    padding: 19px;
+    margin-bottom: 20px;
+    background-image: linear-gradient(to bottom, #e8e8e8 0%, #f5f5f5 100%);
+    border: 1px solid #e3e3e3;
+    border-radius: 4px;
+    width: 595px;
+    max-width: 100%;
+}
+
+.form_title {
+    font-size: 17.5px;
+    font-weight: bold;    
+    line-height: 20px;
+    font-family: 'Roboto',Tahoma,Verdana,sans-serif;
+    color: #333;
+    text-align: center;
+    margin-top: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #333;
+    margin-bottom: 10px;
+}
+
+.form_title.align_left {
+    text-align: left;
+}
+
+.form_description {
+    margin-bottom: 10px;
+}
+
+.wpcf7-form input,
+.wpcf7-form select,
+.wpcf7-form textarea {
+    width: 100%;
+    padding: 4px;
+    font: normal 1em Verdana, sans-serif;
+    color: #000;
+    border: 1px solid rgb(169, 169, 169) !important;
+}
+
+.wpcf7-form .label {
+    font-weight: 700;
+    margin: 15px 0 5px;
+    padding: 0;
+    color: #000002;
+    font-size: 16px;
+    display: table;
+}
+
+.italic_label {
+    font-style: italic;
+    font-size: 16px;
+    display: table;
+    margin-bottom: 15px;
+}
+
+.wpcf7-form .label.margin_top_0 {
+    margin-top: 0;
+}
+
+.wpcf7-form .wpcf7-form-control.wpcf7-submit {
+    color: #fff;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    background-color: #3a3a3a;
+    display: table;
+    padding: 4px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    line-height: 20px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+    cursor: pointer;
+    -webkit-appearance: button;
+    border: 2px solid #3a3a3a;
+    margin: 30px 0 0;
+    width: auto;
+}
+
+/** Commercial Newsletter Form **/
+.form_title.align_left {
+    text-align: left;
+}
+
+.free_bus_appraisal_form_container.commercial_newsletter {
+    width: 100%;
+    max-width: 500px;
+}
+
+/** Commercial Real Estates Form **/
+
+/** TABS **/
+
+ul.sidebar_tabs {
+    padding: 0;
+    list-style: none;
+    overflow: auto;
+}
+
+li.tab_container {
+    width: 50%;
+    display: block;
+    text-align: center;
+    float: left;
+}
+
+.tab_container,
+.tab_container:hover {
+    color: #0052a0;
+    border-bottom: 1px solid #ddd;
+}
+
+.tab_container.active {
+    color: #555;
+    border-bottom: 0;
+}
+
+.tab_container div {
+    padding: 10px 0;
+    border-radius: 4px 4px 0 0;
+}
+
+.tab_container:hover div {
+    background: #eee;
+    cursor: pointer;
+}
+
+.tab_container.active:hover div {
+    background: transparent;
+    cursor: initial;
+}
+
+.tab_container.active div {
+    border: 1px solid #ddd;
+    border-bottom: 0;
+}
+
+.toggle_content {
+    display: none;
+}  
+
+.toggle_content.active {
+    display: block;
+}   
+
+/** END of TABS **/
+
+
+/** Real Estate Search Result **/
+.ream_est_name {
+    font-size: 19px;
+    color: #333;
+}
+
+.real_est_description {
+    font-size: 15px;
+    color: #929292;
+    line-height: 18px;
+    display: table;
+    margin-top: 5px;
+}
+
+.real_est_cat_tag {
+    display: inline-block;
+    float: left;
+    font-style: italic;
+    font-size: 80%;
+    margin: 3px 6px 4px 0;
+    background: #c0c0c0;
+    color: #333;
+    display: inline-block;
+    padding: 2px 6px 2px 6px;
+}
+
+.real_est_cat_tag:hover {
+    background: #0052a0;
+    color: #fff;
+}
+
+.real_est_bottom_categories {
+    margin-top: 5px;
+    overflow: auto;
+}
+
+.real_est_searchresult {
+    position: relative;
+    min-height: 180px;
+    margin-bottom: 20px;
+    border: 1px solid #dedede;
+    background: url('/wp-content/plugins/bbcrm/images/results-bg.png') bottom left;
+    overflow: hidden;
+}
+
+.searchlisting_bottom_ref { 
+	background-color: #ddd;
+	width:100%;
+	padding: 7px;
+	font-size: 12px;
+}
+
+.searchlisting_bottom_category {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.searchlisting_bottom_category a {
+    display: inline-block;
+    float: none;
+    margin: 5px;
+	color: black;
+}
+
+.wpcf7-form-control.wpcf7-submit {background-color:#ddd !important:}
+
+.wpcf7-submit {background-color:#ddd !important:}
+
+.brokeritem img{-webkit-filter: grayscale(100%);
+	filter: grayscale(100%);
+}
+
+.brokeritem img:hover{-webkit-filter: grayscale(100%);
+	filter: grayscale(0%);
+}
+
+.pImg{-webkit-filter: grayscale(100%);}
+
+.pImg:hover {
+    filter: none;
+    -webkit-filter: grayscale(0%);
+    -moz-filter:    grayscale(0%);
+    -ms-filter:     grayscale(0%);
+    -o-filter:      grayscale(0%);
+    cursor: pointer;
+ -webkit-transition: all 1s ease;
+     -moz-transition: all 1s ease;
+       -o-transition: all 1s ease;
+      -ms-transition: all 1s ease;
+          transition: all 1s ease;
+}
+
+input, select, textarea{
+    color: #333 !important;
+}
+
+#form-back.button {background-color: #ccc !important;}
+
+.wpcf7-form-control.wpcf7-submit {background-color: #ccc !important;}
+
+#form-reg.wpcf7-form-control.wpcf7-submit {background: rgba(226,226,226,1);
+
+background: -moz-linear-gradient(top, rgba(226,226,226,1) 0%, rgba(219,219,219,1) 50%, rgba(209,209,209,1) 51%, rgba(254,254,254,1) 100%);
+
+background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(226,226,226,1)), color-stop(50%, rgba(219,219,219,1)), color-stop(51%, rgba(209,209,209,1)), color-stop(100%, rgba(254,254,254,1)));
+
+background: -webkit-linear-gradient(top, rgba(226,226,226,1) 0%, rgba(219,219,219,1) 50%, rgba(209,209,209,1) 51%, rgba(254,254,254,1) 100%);
+
+background: -o-linear-gradient(top, rgba(226,226,226,1) 0%, rgba(219,219,219,1) 50%, rgba(209,209,209,1) 51%, rgba(254,254,254,1) 100%);
+
+background: -ms-linear-gradient(top, rgba(226,226,226,1) 0%, rgba(219,219,219,1) 50%, rgba(209,209,209,1) 51%, rgba(254,254,254,1) 100%);
+
+background: linear-gradient(to bottom, rgba(226,226,226,1) 0%, rgba(219,219,219,1) 50%, rgba(209,209,209,1) 51%, rgba(254,254,254,1) 100%);
+
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e2e2e2', endColorstr='#fefefe', GradientType=0 ); !important;}
+
+.clicktoggle{display:inline;float:right;font-size:.6em;margin:auto 6px;}
+#leftsidebar{min-width:280px !important; display: inline-block; clear: none; margin-top: 45px;}
+.request-save{color:#ffffff !important; font-weight:600; font-size:1.0em; background-color:#333; width:auto;text-align:center; padding:7px 8px 3px 8px; float:right; clear:right; height:auto; border-radius:4px; border:0; vertical-align:bottom; position:absolute: bottom:0; margin-bottom: 4px;

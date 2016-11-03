@@ -1,0 +1,98 @@
+<?php
+/*
+Template Name: Broker Search 
+*/
+
+//ini_set('display_errors','on');
+//error_reporting(E_ALL);
+
+global $wp_query,$url;
+
+//die;
+if(is_user_logged_in()){
+//...only if logged in?...
+$userdata = get_userdata(get_current_user_id());
+}
+
+get_header();
+?>
+<section id="content" class="container" style="margin-top:20px">
+   <div class="portfolio_group">
+		<div id="business_container" class="article-page" style="">
+
+
+<h1 class="article-page-head"><?php echo get_the_title();?></h1>
+<?php
+
+////////////////////
+ echo get_the_content();
+ 
+$json = x2apicall(array('_class'=>'Brokers/?_order=-c_position'));
+$brokers =json_decode($json);
+
+if($brokers){
+	echo "<div style='display:inline-block'>"; //this is so the page doesn't scroll endlessly.
+//////////////////
+
+$altcss = "#dddddd";
+foreach ($brokers AS $broker){ //The l
+
+	if("Active" == $broker->c_status){
+		
+        $broker_description = $broker->description;
+		$broker_position = $broker->c_position;		
+		$altcss = ($altcss == "#dddddd")?"#dddddd":"#dddddd";
+		$altclass = ($altcss == "#dddddd")?"":"";
+		$butclass = ($altcss == "")?"altbrokerprofilebutton":"brokerprofilebutton";
+?>
+<div id="broker-<?php echo $broker->id;?>" class="brokeritem" 
+     style="padding:10px;margin-bottom:12px;min-height:230px;display:inline-block; vertical-align:top !important; ">
+
+  <div  style="display:inline-block; clear:none;height:auto; width:155px;vertical-align: top; "  >
+	<?php
+		if($broker->c_profilePicture){
+			$json = x2apicall(array('_class'=>'Media/by:fileName='.urlencode($broker->c_profilePicture).".json"));
+			$brokerimg =json_decode($json);
+			echo '<div style="display:inline-block;width:130px;height:auto;overflow:hidden;margin:22px 10px 10px 1px;"><img class="pImg" src="http://'.$apiserver.'/uploads/media/'.$brokerimg->uploadedBy.'/'.$brokerimg->fileName.'" style="width:100%"  style="clear:both" /></div>';	
+		}else{
+
+		//print_r($broker);
+
+		echo '<div style="display:inline-block; width:130px;height:auto;overflow:hidden;margin:22px 10px 10px 1px;"><img class="pImg" src="http://'.$apiserver.'/uploads/media/marc/broker-'.$broker->c_gender.'.png" style="width:100%"  /></div>';
+	
+	}
+?>
+
+
+  </div>		  
+		  
+		  
+		  <div  class="" style="display:inline-block;width:160px;" >
+					<div class="property_detail"><h3><label><? _e('','bbcrm');?></label><?php echo $broker->name; ?></h3></div>
+					<div style=""> <? _e('','bbcrm');?> <?php echo $broker_position; ?><br></div>
+					
+		       <form method=POST action="<?php echo get_permalink($bbcrm_option["bbcrm_pageselect_broker"]);?>">
+		              <input type=hidden name=eid value="<?php echo $broker->nameId; ?>">
+		              <input style="background-color:#1e5da5!important;padding: 8px 12px; width: 40%;" class="<?php echo $butclass;?>" 
+		              type=submit value="Read Full Bio">
+                </form>	    
+</div>		            
+		
+</div>
+	
+<!--portfolioitem-->
+<?php 
+		} //end if active
+	}
+}
+?>
+
+</div>
+</div>
+
+</section><!-- #primary .widget-area -->
+
+<?php
+get_footer();
+?>
+?>

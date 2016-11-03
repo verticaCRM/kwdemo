@@ -1,0 +1,19 @@
+.theme-background1-dk {background-color:rgb(144, 0, 32) !important;}
+.theme-background2-dk {background-color:#777777 !important;}
+.theme-background1-lt {background-color:#c15b71 !important;}
+.theme-background2-lt {background-color:#aaaaaa !important;}
+
+.theme-color1-dk{color:rgb(144, 0, 32) !important;}
+.theme-color2-dk{color:#777777 !important;}
+.theme-color1-lt{color:#c15b71 !important;}
+.theme-color2-lt{color:#aaaaaa !important;}
+
+.theme-border1-dk{border:1px solid rgb(144, 0, 32) !important;}
+.theme-border2-dk{border:1px solid #777777 !important;}
+.theme-border1-lt{border:1px solid #c15b71 !important;}
+.theme-border2-lt{border:1px solid #aaaaaa !important;}
+
+.theme-bordertop1-dk{border-top:1px solid rgb(144, 0, 32) !important;}
+.theme-bordertop2-dk{border-top:1px solid #777777 !important;}
+.theme-bordertop1-lt{border-top:1px solid #c15b71 !important;}
+.theme-bordertop2-lt{border-top:1px solid #aaaaaa !important;}
