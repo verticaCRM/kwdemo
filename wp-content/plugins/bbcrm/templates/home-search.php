@@ -21,7 +21,10 @@
 
 <?php
 	$business_categories = 'c_businesscategories=["'.trim($v).'"]';
-	$json_for_clistings = x2apicall(array('_class'=>'Clistings'));
+
+//Grab only listings with 'Active' and 'Needs Refresh' Sale Stages
+	$sales_stage = 'Active__Needs Refresh';
+	$json_for_clistings = x2apicall(array('_class'=>'Clistings?'.'c_sales_stage=:multiple:__'.$sales_stage));
 	$decoded_clistings = json_decode($json_for_clistings);
 	// echo '<pre>'; print_r($decoded_clistings); echo '</pre>';
 ?>
