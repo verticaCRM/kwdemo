@@ -230,8 +230,6 @@ jQuery('#form_buyerreg input, #form_buyerreg select' ).each(function(){
 </script>
 
 
-<?php echo do_shortcode('[listmenu menu="Sub Registration" menu_id="sub_registration" menu_class="au_submenu"]');?>
-
  <section style="margin-top: 36px !important;"  id="content" class="container"> 
       
   <div stlye="max-width:100%; id="business_container">
