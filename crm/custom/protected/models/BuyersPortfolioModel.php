@@ -374,6 +374,114 @@ class BuyersPortfolioModel extends CModel {
         });
         return $gridModels;
     }
+    public function getListingFiles($listingId, $status = false){
+        $private = 0;
+        if ($status)
+        {
+            switch ($status)
+            {
+                case 'private':
+                    $private = 1;
+                    break;
+                case 'public':
+                    $private = 0;
+                    break;
+                default:
+                    $private = 0;
+                    break;
+            }
+        }
+        $sql =
+            'SELECT id, associationType, associationId, uploadedBy,fileName, name, nameId, createDate, lastUpdated, private, description, mimetype, filesize, dimensions, drive, thumbnail
+            FROM x2_media
+            WHERE associationType = "clistings" AND associationId = '.abs(intval($listingId));
+        if ($status)
+        {
+            $sql .= ' AND private = '.abs(intval($private));
+        }
+        $sql .= ' ORDER BY name ASC ';
+
+        $command = Yii::app()->db->createCommand($sql);
+        $result = $command->queryAll();
+
+        return $result;
+    }
+    public function saveBuyerListingFiles($data=array(), $portfolioId = false, $listingId = false, $buyerId = false){
+
+        if (empty($data))
+        {
+            return false;
+        }
+        else
+        {
+            //delete all existing media for this portfolio and add them again
+            $sql =
+                'DELETE FROM x2_portfolio_to_media
+                    WHERE portfolio_id = "'.abs(intval($portfolioId)).'" ';
+            Yii::app()->db->createCommand($sql)->execute();
+
+            foreach ($data as $mediaItem)
+            {
+                $private_date = ($mediaItem['private_date'] != '')? date("Y-m-d", strtotime($mediaItem['private_date'])) : '';
+                $sql =
+                    'INSERT INTO x2_portfolio_to_media (portfolio_id,media_id, private, private_end_date, listing_id, buyer_id )
+                     VALUES ("'.abs(intval($portfolioId)).'", "'.abs(intval($mediaItem['file_id'])).'", "'.abs(intval($mediaItem['private'])).'", "'.$private_date.'", "'.abs(intval($listingId)).'", "'.abs(intval($buyerId)).'")
+                     ';
+                Yii::app()->db->createCommand($sql)->execute();
+            }
+
+            return true;
+        }
+    }
+    public function getBuyerListingFiles($mediaId = false, $portfolioId = false, $listingId = false, $buyerId = false, $status = false){
+
+        $private = 0;
+        if ($status)
+        {
+            switch ($status)
+            {
+                case 'private':
+                    $private = 1;
+                    break;
+                case 'public':
+                    $private = 0;
+                    break;
+                default:
+                    $private = 0;
+                    break;
+            }
+        }
+        $sql =
+            'SELECT id, portfolio_id, media_id, private, private_end_date, listing_id, buyer_id
+            FROM x2_portfolio_to_media
+            WHERE 1=1 ';
+        if ($status)
+        {
+            $sql .= ' AND private = '.abs(intval($private));
+        }
+        if ($mediaId)
+        {
+            $sql .= ' AND media_id = '.abs(intval($mediaId));
+        }
+        if ($portfolioId)
+        {
+            $sql .= ' AND portfolio_id = '.abs(intval($portfolioId));
+        }
+        if ($listingId)
+        {
+            $sql .= ' AND listing_id = '.abs(intval($listingId));
+        }
+        if ($buyerId)
+        {
+            $sql .= ' AND buyer_id = '.abs(intval($buyerId));
+        }
+        $sql .= ' ORDER BY id DESC ';
+
+        $command = Yii::app()->db->createCommand($sql);
+        $result = $command->queryAll();
+
+        return $result;
+    }
 
 
 }

@@ -76,6 +76,54 @@ class SellerController extends x2base {
     }
 
     /**
+     * Creates a new Contact record from a Leads
+     */
+    public function actionCreateFromLeads($id) {
+        $model=new Seller;
+        $users=User::getNames();
+
+        if ($id > 0) {
+
+            $modelLead = X2Model::getAssociationModel('x2Leads', $id);
+
+
+            $_POST['Seller'] = $modelLead->attributes;
+            //$_POST['Contacts']['c_broker_id'] = $brokerID;
+            $_POST['Seller']['c_entrydate'] = date("Y-m-d H:i:s"); // put some default buyer (no matter the instance)
+            $_POST['Seller']['c_comment'] = $modelLead->attributes['description'];
+            $_POST['Seller']['id'] ="";
+            $_POST['Seller']['nameId'] = "";
+
+
+                $temp = $model->attributes;
+                $model->setX2Fields($_POST['Seller']);
+
+                if(isset($_POST['x2ajax'])){
+                    $ajaxErrors = $this->quickCreate ($model);
+                } else{
+                    if ($model->save ()) {
+
+                        //delete the lead and then redirect
+                        $this->cleanUpTags($modelLead);
+                        $modelLead->delete();
+
+                        $this->redirect(array('view', 'id' => $model->id));
+                    }
+                }
+        }
+
+        if (isset($_POST['x2ajax'])) {
+            $this->renderInlineCreateForm($model, isset($ajaxErrors) ? $ajaxErrors : false);
+        } else {
+            $this->render('create', array(
+                'model' => $model,
+                'users' => $users,
+            ));
+        }
+    }
+
+
+    /**
      * Creates a new model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      */
@@ -106,6 +154,7 @@ class SellerController extends x2base {
             ));
         }
     }
+
 
     /**
      * Updates a particular model.

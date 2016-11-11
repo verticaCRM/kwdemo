@@ -155,51 +155,19 @@ else
 
 get_header();
 
+echo do_shortcode('[listmenu menu="Sub Business" menu_id="sub_business" menu_class="au_submenu"]');
 ?>
 
-
-
-<?php echo do_shortcode('[listmenu menu="Sub Business" menu_id="sub_business" menu_class="au_submenu"]');?>
+<div class="row searchpage_main_content_row">
 
 
 <section id="content" data="property" style="min-height:1500px;"> 
 	<div class="portfolio_group">
 		<div class="container-fluid search_result">
-			<div class="">
 
 				<div class="col-12 col-sm-4 col-lg-3 sidebar_content" style=" margin-top: 45px;">
-				
-				<div class="panel-group" id="accordion">
-						  <div class="panel panel-default">
-							<div class="panel-heading">
-							  <h4 style="line-height: 40px;" class="panel-title">
-								<a style="color:#333; font-weight:100; font-size: 24px; " class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-								  Business Search
-								</a>
-							  </h4>
-							</div>
-							<div id="collapseOne" class="panel-collapse collapse">
-							  <div class="panel-body">
-								 <?php echo do_shortcode('[featuredsearch]');?>
-							  </div>
-							</div>
-						  </div>
- 
- 
-						
-						
-							<br> 
-							<div class="sidebar_search_by_id_container" >
-								<h3 class="panel-title">
-								  Find by ID
-								</h3>
-								<?php echo do_shortcode('[searchbyid addbutton=false]'); ?>	
-
-							</div>
-							<br> 
-						  		</div>
-				
-		</div>
+					<?php get_sidebar('page'); ?>				
+				</div>
 
 				<div  id="business_container" class="col-12 col-sm-8 col-lg-9 searchlists_container" style="color: black;">
                        <h1 style="text-align:left; padding-top: 22px;"> <?php echo get_the_title( $ID ); ?></h1>
@@ -336,8 +304,8 @@ echo $html;
 	
 		 
 </section>
- <div style="vertical-align:bottom;" class="col-lg-12">
-		  <p class="align-center"><a href="/free-business-appraisal"><img class="img-responsive" src="/wp-content/uploads/2016/07/abs-970X90.jpg"></a></p>
-		  </div>
+
+<!-- End of row searchpage_main_content_row -->
+</div>
 
 <?php get_footer(); ?>

@@ -7,7 +7,7 @@
         </a>
       </h4>
     </div>
-    <div id="collapseOne" class="panel-collapse collapse">
+    <div id="collapseOne" class="panel-collapse in">
       <div class="panel-body">
          <?php echo do_shortcode('[featuredsearch]');?>
       </div>

@@ -178,6 +178,7 @@ class RecordViewWidgetManager extends TwoColumnSortableWidgetManager {
                     'InlineSellerMapsWidget',
             ))) ||
             ($modelType == 'Accounts' && in_array ($name, array (
+                    'InlineBuyersPortfolioWidget',
                     'InlineListingBuyersWidget',
                     'InlineListingDetailsWidget',
                     'InlineBuyerMapsWidget',
@@ -212,6 +213,7 @@ class RecordViewWidgetManager extends TwoColumnSortableWidgetManager {
                     'InlineListingDetailsWidget',
                     'InlineBuyerMapsWidget',
                     'InlineListingMapsWidget',
+                    'InlineSellerMapsWidget',
             ))) ||
             ($modelType == 'Brokers' && in_array ($name, array (
                     'InlineBuyersPortfolioWidget',

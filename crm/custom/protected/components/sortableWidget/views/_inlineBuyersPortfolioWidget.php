@@ -309,20 +309,20 @@ $columns[] = array(
 
             if ($c_is_hidden != 1)
             {
-               $updateButton = '<span class=\'fa fa-power-off x2-hint\' title=\'Hide this portfolio record.\' onclick="javascript:listingActions(this, \'hide\', '.$data->relatedModel->id.', \''.Yii::app()->controller->createUrl('/site/showHidePortfolioItem').'\', event); return false;" style="cursor: pointer;"></span>';
+               $updateButton = '<span class=\'fa fa-power-off x2-hint\' title=\'Hide this data room record.\' onclick="javascript:listingActions(this, \'hide\', '.$data->relatedModel->id.', \''.Yii::app()->controller->createUrl('/site/showHidePortfolioItem').'\', event); return false;" style="cursor: pointer;"></span>';
 
             }
             else
             {
-               $updateButton = '<span class=\'fa fa-repeat x2-hint\' title=\'UnHide this portfolio record.\' onclick="javascript:listingActions(this, \'show\', '.$data->relatedModel->id.', \''.Yii::app()->controller->createUrl('/site/showHidePortfolioItem').'\',  event); return false;" style="cursor: pointer;" ></span>';
+               $updateButton = '<span class=\'fa fa-repeat x2-hint\' title=\'UnHide this data room record.\' onclick="javascript:listingActions(this, \'show\', '.$data->relatedModel->id.', \''.Yii::app()->controller->createUrl('/site/showHidePortfolioItem').'\',  event); return false;" style="cursor: pointer;" ></span>';
             }
             if ($c_release_status != 'Released' && $buyer_status == 'Registered')
             {
-              $releaseButton = '<span class=\'fa fa-download x2-hint\' title=\'Release this portfolio record.\' onclick="javascript:listingActions(this, \'Released\', '.$data->relatedModel->id.', \''.Yii::app()->controller->createUrl('/site/updatePortfolioItemStatus').'\',  event); return false;" style="cursor: pointer;" ></span>';
+              $releaseButton = '<span class=\'fa fa-download x2-hint\' title=\'Send email to buyer.\' onclick="javascript:listingActions(this, \'Released\', '.$data->relatedModel->id.', \''.Yii::app()->controller->createUrl('/site/updatePortfolioItemStatus').'\',  event); return false;" style="cursor: pointer;" ></span>';
             }
             elseif ($c_release_status != 'Released' && $buyer_status != 'Registered')
             {
-                $releaseButton = '<span class=\'fa fa-download x2-hint\' title=\'Release this portfolio record.\' onclick="javascript:alert(\'Can be release only to Registered buyers\'); return false;" style="cursor: pointer;" ></span>';
+                $releaseButton = '<span class=\'fa fa-download x2-hint\' title=\'Send email to buyer.\' onclick="javascript:alert(\'Can be release only to Registered buyers\'); return false;" style="cursor: pointer;" ></span>';
             }
             else
             {
@@ -332,12 +332,48 @@ $columns[] = array(
         },
     'type'  => 'raw',
 );
+$columns[] = array(
+    'name'  =>'listing_files.',
+    'header' => Yii::t("contacts", 'Files'),
+    'htmlOptions' => array (
+        'class' =>'action-button-cell',
+    ),
+
+    'value' => function($data){
+	    	$buyer_status = $data->relatedModel->Contacts->c_buyer_status;
+	    	$c_release_status = $data->getReleaseStatus();
+	    	if ($buyer_status != 'Registered')
+	    	{
+		    	$updateButton = '<span class=\'fa fa-plus x2-hint\' title=\'Set up files permissions.\' onclick="javascript:alert(\'Can be set up only for Registered buyers!\'); return false;" style="cursor: pointer;" ></span>';
+	    	}
+	    	else
+	    	{
+		    	if ($c_release_status == 'Released')
+		    	{
+			    	$buyer = explode('_', $data->relatedModel->c_buyer);
+				$updateButton = '<span class=\'fa fa-plus x2-hint\' title=\'Set up files permissions.\' onclick="javascript:listingFiles(this, \'show\', '.$data->relatedModel->id.', '.$data->relatedModel->c_listing_id.', '.$buyer[1].', \''.Yii::app()->controller->createUrl('/site/showListingFiles').'\',  event); return false;" style="cursor: pointer;" ></span>';
+		    	}
+		    	else
+		    	{
+			    	$updateButton = '';
+		    	}
+		    	
+	    	}
+            //printR($data);
+            //die();
+            
+
+            return $updateButton;
+        },
+    'type'  => 'raw',
+);
 $this->widget('X2GridViewGeneric', array(
     'id' => "buyersPortfolio-grid",
     'enableGridResizing' => true,
     'showHeader' => CPropertyValue::ensureBoolean (
         $this->getWidgetProperty('showHeader')),
     'defaultGvSettings' => array (
+        'listing_files.' => 70,
         'name' => '22%',
         'nameID' => '18%',
         'assignedTo' => '13%',
@@ -388,12 +424,42 @@ if ($displayMode === 'graph') {
 <!--/* x2proend */-->
 
 <?php
+/*printR($relationshipsDataProvider->totalItemCount);
+//printR($relationshipsDataProvider->rawData);
+
+if ($relationshipsDataProvider->totalItemCount > 0)
+{
+    foreach ($relationshipsDataProvider->rawData as $portfolioItem)
+    {
+        $buyer_id = explode('_', $portfolioItem->relatedModel->c_buyer);
+        $listing_id = $portfolioItem->relatedModel->c_listing_id;
+        $prtfolio_id = $portfolioItem->relatedModel->id;
+        printR($listing_id);
+        printR($buyer_id[1]);
+        printR($prtfolio_id);
+
+        $allListingFiles = $this -> getListingFiles($listing_id);
+
+        printR($allListingFiles);
+    }
+}*/
 if($hasUpdatePermissions) {
 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/BuyersPortfolio.js');
 ?>
+    <div class='clearfix'></div>
+    <div id="buyer_listing_files" style="display:none; background: #fff none repeat scroll 0 0;  border: 2px solid #ddd; border-radius: 5px; font-size: 12px;margin: 10px;padding: 5px 10px; position: relative;">
 
+        <div style="display: inline-block; float: right;">
+            <a href="#" class="" id="close_listing_files"><span title="Close Listing Files" class="fa fa-times fa-lg"> </span></a>
+        </div>
+        <div id="listing_files_messages"></div>
+        <div><h3 id="listing_name">Listing Files</h3></div>
+        <div class="x2-loading-icon load8 full-page-loader x2-loader" id="listing_files_loading" style="display: none;"><div class="loader"></div></div>
+        <div id="listing_files_list" class="grid-view"></div>
+    </div>
 <div class='clearfix'></div>
+
 <form id='new-buyersPortfolio-form' class="form" style='display: none;'>
     <input type="hidden" id='ModelId' name="ModelId" value="<?php echo $model->id; ?>">
     <input type="hidden" id='ModelName' name="ModelName" value="<?php echo $modelName; ?>">
@@ -475,7 +541,7 @@ $this->widget('X2GridView', array(
 
     <?php
         echo CHtml::button (
-            Yii::t('app', 'Add to portfolio'),
+            Yii::t('app', 'Add to Data Room'),
             array('id' => 'add-buyersPortfolio-button', 'class'=>'x2-button'));
     ?>
 
@@ -484,4 +550,3 @@ $this->widget('X2GridView', array(
 <?php
 }
 ?>
-

@@ -15,8 +15,20 @@ if(isset($_POST["id"])){
 if($crmid>0){
 	$json = x2apicall(array('_class'=>'Clistings/'.$crmid.'.json'));
 }else{
-	$trailing = (substr($_SERVER["REQUEST_URI"],-1)=="/")?"":"/";
-	$json = x2apicall(array('_class'=>'Clistings/by:c_listing_frontend_url='.$_SERVER["REQUEST_URI"].$trailing.'.json'));
+	//we need to get the listing by ID
+	$listingParams = explode('--',$_SERVER["REQUEST_URI"]);
+	if (count($listingParams) > 1)
+	{
+		//we have a link that contains id
+		$listingID = str_replace('/', '', $listingParams[1]);
+		$json = x2apicall(array('_class'=>'Clistings/'.$listingID.'.json'));
+	}
+	else
+	{
+		$trailing = (substr($_SERVER["REQUEST_URI"],-1)=="/")?"":"/";
+		$json = x2apicall(array('_class'=>'Clistings/by:c_listing_frontend_url='.$_SERVER["REQUEST_URI"].$trailing.'.json'));
+	}
+	
 }
 $listing = json_decode($json);
 

@@ -36,7 +36,7 @@
 	$json = x2apicall(array('_class'=>'dropdowns/1000.json'));
 	$buscats = json_decode($json);
 	
-	$json = x2apicall(array('_class'=>'dropdowns/1085.json'));
+	$json = x2apicall(array('_class'=>'dropdowns/1080.json'));
 	$buscats_subctg = json_decode($json);
 ?>
 
@@ -47,7 +47,7 @@ foreach ($buscats->options as $k=>$v)
 	$parent_flag= 0;
 	foreach ($buscats_subctg->options as $kk=>$vv)
 	{
-		if($v == $vv)
+		if( strtolower($v) == strtolower($vv) )
 		{
 			$parent_flag = 1;
 		}
@@ -57,6 +57,7 @@ foreach ($buscats->options as $k=>$v)
 	{
 		if($i != 0)
 		{
+			// Close Child categories parent container
 			echo "</div>";				
 		}
 		echo "<div class='parent_category_title'>". stripslashes($k) ." (<span class='parent_cat_listings'>0</span>)</div>";
@@ -164,7 +165,7 @@ echo '</div>';
 	<label id="regionlabel" class="theme-color" for="c_listing_region_c"><?php _e("Location/Region",'bbcrm')?></label><br />
 	<select name="c_listing_region_c" id="listing_region" class="fs_select"><option value=''></option>
 	<?php
-	$json = x2apicall(array('_class'=>'dropdowns/1077.json'));
+	$json = x2apicall(array('_class'=>'dropdowns/1002.json'));
 	$regions = json_decode($json);
 	foreach ($regions->options as $k=>$v){
 			echo "<option value='$v'>$k</option>";	
@@ -193,6 +194,7 @@ echo '</div>';
 //Get the brokers in the system
 $json = x2apicall(array('_class'=>'Brokers/'));
 $brokers =json_decode($json);
+// echo '<pre>'; print_r($brokers); echo '</pre>';
 
 if($brokers){
 	$brokerselect = array();
@@ -224,4 +226,5 @@ selectCountyTxt = "<?php _e("Please select a city",'bbcrm');?>";
 		</button>
 	</div>
 </form>
+
 </div>

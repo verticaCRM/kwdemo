@@ -160,7 +160,7 @@ endif;
 ?>
 <?php
 //$permalink = '/'.get_locale().'/listing/'.sanitize_title($listingitem->c_name_generic_c).'';
-$permalink = '/listing/'.sanitize_title($listingitem->c_name_generic_c).'';
+$permalink = '/listing/'.sanitize_title($listingitem->c_name_generic_c).'--'.$listingitem->id;
 echo '<h3><a href="'.$permalink .'">'.$listingitem->c_name_generic_c.'</a></h3>' ;
 
 

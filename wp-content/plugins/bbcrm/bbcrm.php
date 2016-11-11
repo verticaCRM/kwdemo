@@ -70,14 +70,15 @@ add_shortcode('bbcrm_loginbar','bbcrm_get_loginbar');
 
 function get_featured_search( $atts ){
   $a = shortcode_atts( array(
-'num'=>'4',    
-'title' => 'Business for Sale',
+	'num'=>'4',    
+	'title' => 'Business for Sale',
     'type' => 'all',
     'broker'=>'',
     'featured'=>1,
     'franchise'=>false,
-    'sold'=>false
-  ), $atts );
+    'sold'=>false,
+    'collapsed'=>false
+    ), $atts );
   $search = plugin_dir_path(__FILE__)."templates/home-search.php";
   ob_start();
         include($search);
@@ -218,14 +219,14 @@ function get_for_sale_by_industry($atts){
     $json = x2apicall(array('_class'=>'dropdowns/1000.json'));
     $buscats = json_decode($json);
     // Get parent Categories
-    $json = x2apicall(array('_class'=>'dropdowns/1085.json'));
+    $json = x2apicall(array('_class'=>'dropdowns/1080.json'));
     $buscats_par = json_decode($json);
     // Get Clistings Number
     $business_categories = 'c_businesscategories=["'.trim($v).'"]';
     $json_for_clistings = x2apicall(array('_class'=>'Clistings'));
     $decoded_clistings = json_decode($json_for_clistings);
 
-    // echo '<pre>'; print_r($buscats); echo '</pre>';
+    // echo '<pre>'; print_r($decoded_clistings); echo '</pre>';
 
     $parent_cat = '';
     $result = '';
@@ -235,10 +236,10 @@ function get_for_sale_by_industry($atts){
     {
       foreach ($buscats_par->options as $kk=>$vv)
       {
-        if($v == $vv)
+        if( strtolower($v) == strtolower($vv) )
         {
           $parent_cat = $vv;
-          $class_cat = str_replace( '/', '_', strtolower(stripslashes($parent_cat)) );
+          $class_cat = str_replace( array('/', '&', ' '), array('_', '_', ''), strtolower(stripslashes($parent_cat)) );
         }
       }
 
@@ -250,11 +251,12 @@ function get_for_sale_by_industry($atts){
           $i_listings++;
         }
       }
+    // echo '<pre>'; print_r($parent_cat); echo '</pre>';
 
 
-      if( $parent_cat == $v )
+      if( strtolower($parent_cat) == strtolower($v) )
       {
-        $result .= '<div class="for_sale_by_industry_parent">'.$v.' Business For Sale'.'</div>';
+        $result .= '<div class="for_sale_by_industry_parent">'.$v.' - Business For Sale'.'</div>';
       }
       else
       {

@@ -53,6 +53,7 @@ class ContactsController extends x2base {
                     'newContacts',
                     'update',
                     'create',
+                    'createFromLeads',
                     'quickContact',
                     'import',
                     'importContacts',
@@ -561,6 +562,70 @@ class ContactsController extends x2base {
                     echo $newId;
                 }
             }
+        }
+    }
+
+
+
+    /**
+     * Creates a new Contact record from a Leads
+     */
+    public function actionCreateFromLeads($id) {
+        $model = new Contacts;
+        $name = 'Contacts';
+        $users = User::getNames();
+
+        //$leadID = ($_REQUEST['id'])? abs(intval($_REQUEST['id'])): 0;
+
+        if ($id > 0) {
+
+            $modelLead = X2Model::getAssociationModel('x2Leads', $id);
+
+            $fieldRecord = X2Model::model('brokers')->findByAttributes(array('c_status' =>'Active'));
+            $brokerName = $fieldRecord->name;
+
+            $_POST['Contacts'] = $modelLead->attributes;
+            //$_POST['Contacts']['c_broker_id'] = $brokerID;
+            $_POST['Contacts']['c_broker'] = $brokerName; // put some default buyer (no matter the instance)
+            $_POST['Contacts']['c_contacttype'] ="Buyer";
+            $_POST['Contacts']['c_buyer_status'] = "Unregistered";
+            $_POST['Contacts']['c_comment'] = $modelLead->attributes['description'];
+
+            unset($_POST['Contacts']['id']);
+            unset($_POST['Contacts']['nameId']);
+
+            $model->setX2Fields($_POST['Contacts']);
+            $model->setName();
+            if (isset($_POST['x2ajax'])) {
+                $ajaxErrors = $this->quickCreate($model);
+            } else {
+                if ($model->validate () && $model->checkForDuplicates()) {
+                    Yii::app()->user->setState('json_attributes', json_encode($model->attributes));
+                    $this->redirect($this->createUrl('/site/duplicateCheck', array(
+                        'moduleName' => 'contacts',
+                        'modelName' => 'Contacts',
+                        'id' => null,
+                        'ref' => 'create',
+                    )));
+                } else {
+                    if ($model->save()) {
+                        //delete the lead and then redirect
+                        $this->cleanUpTags($modelLead);
+                        $modelLead->delete();
+
+                        $this->redirect(array('view', 'id' => $model->id));
+                    }
+                }
+            }
+        }
+
+        if (isset($_POST['x2ajax'])) {
+            $this->renderInlineCreateForm($model, isset($ajaxErrors) ? $ajaxErrors : false);
+        } else {
+            $this->render('create', array(
+                'model' => $model,
+                'users' => $users,
+            ));
         }
     }
 

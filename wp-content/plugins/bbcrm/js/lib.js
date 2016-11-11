@@ -296,7 +296,8 @@ function get_business_search_value_after_reload()
 	    localStorage.setItem( 'maximum_investment', jQuery('[name="c_maximum_investment_c"]').val() );
 	    localStorage.setItem( 'listing_region', jQuery('[name="c_listing_region_c"]').val() );
 	    localStorage.setItem( 'adjusted_net_profit', jQuery('[name="c_adjusted_net_profit_c"]').val() );
-	    localStorage.setItem( 'broker', jQuery('[name="c_Broker[]"]').val() );
+	    localStorage.setItem( 'broker', jQuery('[name="c_Broker[]"]').val().join('|') );
+	    console.log( localStorage.getItem('broker') );
 	    localStorage.setItem( 'id_search_input', jQuery('.id_search_input').val() );
 	    localStorage.setItem( 'franchise', String(jQuery('.franchise_checkbox').is(':checked')) );
 
@@ -329,36 +330,45 @@ function get_business_search_value_after_reload()
 
 	    //Brokers
 	    var broker = localStorage.getItem('broker');
-	    var brokers = broker.split(',');
+	    
 
-	    brokers.forEach( function(item)
+	    if( broker && typeof broker !== 'undefined')
 	    {
-	    	if (broker !== null && broker != 'undefined' ) jQuery('#broker option[value="'+ item +'"]').attr('selected','selected');
-	    });
+		    var brokers = broker.split('|');
+
+		    brokers.forEach( function(item)
+		    {
+		    	if (broker !== null && broker != 'undefined' ) jQuery('#broker option[value="'+ item +'"]').attr('selected','selected');
+		    });	    	
+	    }
 
 	    //Checkboxes
 		var selected_businesscategories = localStorage.getItem('selected_businesscategories');
 		// console.log(selected_businesscategories);
-	    var businesscategory = localStorage.getItem('businesscategory');
-	    var businesscategories = businesscategory.split(',');
+	    var businesscategory = localStorage.getItem('businesscategory');	
 
-	    if(!selected_businesscategories || selected_businesscategories < 0)
+	    if( businesscategories && typeof businesscategories !== 'undefined')
 	    {
-	    	jQuery('.selected_number_of_categories .selected_number').html(0);
-	    }
-	    else
-	    {
-	    	jQuery('.selected_number_of_categories .selected_number').html(selected_businesscategories);    	
-	    }
+	    	var businesscategories = businesscategory.split(',');
 
-	    businesscategories.forEach( function(item)
-	    {
-	    	if (businesscategory !== null && businesscategory != 'undefined' )
-	    	{
-	    		jQuery('.child_category_container input[value="'+ item +'"]').attr('checked','checked');
-	    		jQuery('.child_category_container input[value="'+ item +'"]').parent().parent().show();
-	    	} 
-	    });		
+		    if(!selected_businesscategories || selected_businesscategories < 0)
+		    {
+		    	jQuery('.selected_number_of_categories .selected_number').html(0);
+		    }
+		    else
+		    {
+		    	jQuery('.selected_number_of_categories .selected_number').html(selected_businesscategories);    	
+		    }
+
+		    businesscategories.forEach( function(item)
+		    {
+		    	if (businesscategory !== null && businesscategory != 'undefined' )
+		    	{
+		    		jQuery('.child_category_container input[value="'+ item +'"]').attr('checked','checked');
+		    		jQuery('.child_category_container input[value="'+ item +'"]').parent().parent().show();
+		    	} 
+		    });		
+		}
 
 	    // Category tag
 	    localStorage.setItem( 'category_tag_val', '' );
@@ -549,6 +559,27 @@ function do_sidebar_tabs() {
 
 
 
+//Bookmark Listing
+function bookmark(title, url) {
+    if(document.all) { // ie
+        window.external.AddFavorite(url, title);
+    }
+    else if(window.sidebar) { // firefox
+        window.sidebar.addPanel(title, url, "");
+    }
+    else if(window.opera && window.print) { // opera
+        var elem = document.createElement('a');
+        elem.setAttribute('href',url);
+        elem.setAttribute('title',title);
+        elem.setAttribute('rel','sidebar');
+        elem.click(); // this.title=document.title;
+    }
+}
+
+
+
+
+
 
 /**
 	ON DOCUMENT READY
@@ -556,6 +587,22 @@ function do_sidebar_tabs() {
 
 jQuery(document).on('ready', function()
 {
+	//Bookmark Listing
+	jQuery("a.jQueryBookmark").click(function(e){
+		e.preventDefault();
+	    if (window.sidebar && window.sidebar.addPanel) { // Mozilla Firefox Bookmark
+	      window.sidebar.addPanel(document.title, window.location.href, '');
+	    } else if (window.external && ('AddFavorite' in window.external)) { // IE Favorite
+	      window.external.AddFavorite(location.href, document.title);
+	    } else if (window.opera && window.print) { // Opera Hotlist
+	      this.title = document.title;
+	      return true;
+	    } else { // webkit - safari/chrome
+	      alert('Please press <' + (navigator.userAgent.toLowerCase().indexOf('mac') != -1 ? 'Command/Cmd' : 'CTRL') + ' + D> to bookmark this page. Thank you.');
+	    }
+	});
+
+
 
 	if( jQuery('.sidebar_search_by_id_container').length )
 	{

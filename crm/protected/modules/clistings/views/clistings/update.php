@@ -41,6 +41,15 @@ include("protected/modules/clistings/clistingsConfig.php");
 ', CClientScript::POS_READY);
 */
 
+
+// init selected town and region
+Yii::app()->clientScript->registerScript('clistings-updates', '
+var selected_town = "'.$model->c_listing_town_c.'";
+var selected_region = "'.$model->c_listing_region_c.'";
+var selected_country = "'.$model->c_listing_country_c.'";
+', CClientScript::POS_HEAD);
+
+
 Yii::app()->clientScript->registerScriptFile($this->module->assetsUrl.'/js/clistings.js', CClientScript::POS_END);
 Yii::app()->clientScript->registerCssFile($this->module->assetsUrl.'/css/clistingsUpdateForm.css');
 

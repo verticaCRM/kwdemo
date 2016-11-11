@@ -73,7 +73,8 @@ class SiteController extends x2base {
                     'fullscreen', 'widgetState', 'widgetOrder', 'saveGridviewSettings',
                     'saveFormSettings', 'saveWidgetHeight', 'inlineEmail', 'tmpUpload', 'upload',
                     'uploadProfilePicture', 'index', 'contact', 'viewNotifications', 'inlineEmail',
-                    'toggleShowTags', 'appendTag', 'removeTag', 'addRelationship', 'addPortfolioItems', 'deletePortfolioItem', 'updatePortfolioItemStatus', 'showHidePortfolioItem', 'printRecord',
+                    'toggleShowTags', 'appendTag', 'removeTag', 'addRelationship',
+                    'addPortfolioItems', 'deletePortfolioItem', 'updatePortfolioItemStatus', 'showHidePortfolioItem', 'showListingFiles','saveBuyerListingFiles', 'printRecord',
                     'createRecords', 'toggleVisibility', 'page', 'showWidget', 'hideWidget',
                     'reorderWidgets', 'minimizeWidget', 'publishPost', 'getEvents', 'loadComments',
                     'loadPosts', 'addComment', 'flagPost', 'broadcastEvent', 'minimizePosts',
@@ -83,7 +84,7 @@ class SiteController extends x2base {
                     'stickyPost', 'getEventsBetween', 'mediaWidgetToggle', 'createChartSetting',
                     'deleteChartSetting', 'GetActionsBetweenAction', 'DeleteURL', 'widgetSetting',
                     'removeTmpUpload', 'duplicateCheck', 'resolveDuplicates', 'getSkypeLink',
-                    'mergeRecords', 'ajaxSave'),
+                    'mergeRecords', 'ajaxSave','dataRoomFiles'),
                 'users' => array('@'),
             ),
             array('allow',
@@ -1663,6 +1664,101 @@ class SiteController extends x2base {
         }
     }
 
+public function actionShowListingFiles($listing_id, $portfolio_id, $buyer_id) {
+
+        $rel = X2Model::model('Clistings')->findByAttributes(array('id' => $listing_id));
+
+        $BuyersPortfolioModel = new BuyersPortfolioModel ();
+        $listingsFilesAll = $BuyersPortfolioModel->getListingFiles($listing_id);
+
+        $listingsFiles = array();
+        if (!empty($listingsFilesAll))
+        {
+            foreach ($listingsFilesAll as $index => $fileItem)
+            {
+                $listingsFiles[$index] = $fileItem;
+                $buyerDetails = array();
+
+                //create file url and set if is file or image
+                $is_image = false;
+                if (strpos($fileItem['mimetype'], 'image') !== false) {
+                     $is_image = true;
+                }
+                $listingsFiles[$index]['is_image'] = $is_image;
+
+                $file_url = '/crm/uploads/media/'.$fileItem['uploadedBy'].'/'.$fileItem['fileName'];
+                $listingsFiles[$index]['file_url'] = $file_url;
+
+                //check if has any permissions set up for this pare of buyer+listing
+                //getBuyerListingFiles($mediaId = false, $portfolioId = false, $listingId = false, $buyerId = false, $status = false)
+                $fileBuyer = $BuyersPortfolioModel->getBuyerListingFiles($fileItem['id'], $portfolio_id);
+                if (count($fileBuyer) > 0)
+                {
+                    $buyerDetails = $fileBuyer[0];
+                    $buyerDetails['private_end_date'] = ($buyerDetails['private_end_date'] != '0000-00-00')? date('m/d/Y', strtotime($buyerDetails['private_end_date'])) : $buyerDetails['private_end_date'];
+
+                }
+                $listingsFiles[$index]['buyerDetails'] = $buyerDetails;
+
+            }
+        }
+
+
+        $response = array();
+        $response['listing_name'] = $rel['name'];
+        $response['files'] = $listingsFiles;
+
+        echo json_encode($response);
+        Yii::app()->end();
+    }
+
+    public function actionSaveBuyerListingFiles() {
+        if(isset($_REQUEST['file_item']))
+        {
+           // printR($_REQUEST);
+           if (!empty($_REQUEST['file_item']))
+           {
+               $BuyersPortfolioModel = new BuyersPortfolioModel ();
+               $portfolioId = abs(intval($_REQUEST['portfolio_id']));
+               $listingId = abs(intval($_REQUEST['listing_id']));
+               $buyerId = abs(intval($_REQUEST['buyer_id']));
+               $dataFileItems = array();
+               //saveBuyerListingFiles($data=array(), $portfolioId = false, $listingId = false, $buyerId = false){
+               foreach ($_REQUEST['file_item'] as $itemID)
+               {
+                   $dataFile = array();
+                   $dataFile['file_id'] = $itemID;
+                   $dataFile['private'] = (isset($_REQUEST['private_'.$itemID]))? 1 : 0;
+                   if ($dataFile['private'] == 0)
+                   {
+                       $dataFile['private_date'] = '';
+                   }
+                   else
+                   {
+                     $dataFile['private_date'] = (isset($_REQUEST['expiration_date_'.$itemID]) && $_REQUEST['expiration_date_'.$itemID] != '')? date("Y-m-d", strtotime($_REQUEST['expiration_date_'.$itemID])) : '';                     
+                   }
+                   $dataFileItems[] = $dataFile;
+               }
+               $BuyersPortfolioModel->saveBuyerListingFiles($dataFileItems, $portfolioId, $listingId, $buyerId);
+           }
+            $status = true;
+            $message = 'Permissions set up successfully';
+        }
+        else
+        {
+            $status = false;
+            $message = 'Some errors occured. Please try again.';
+        }
+
+
+        $response = array();
+        $response['status'] = $status;
+        $response['message'] = $message;
+
+        echo json_encode($response);
+        Yii::app()->end();
+    }
+
     public function actionDeletePortfolioItem($porfolioId) {
         $rel = X2Model::model('Portfolio')->findByAttributes(array('id' => $porfolioId));
         if (isset($rel)) {
@@ -2559,5 +2655,48 @@ class SiteController extends x2base {
             }
         }
     }
+    
+    /**
+     * FIX ADD fields for portfolio to Media (need it to Data Room - Confidentials files)
+     */
+    public function actionDataRoomFiles() {
+        $sql = 'DROP TABLE IF EXISTS x2_portfolio_to_media';
+        Yii::app()->db->createCommand($sql)->execute();
+        print_r('<pre>');print_r($sql);print_r('</pre>');   
+        
+        $sql = "CREATE TABLE IF NOT EXISTS `x2_portfolio_to_media` (
+                      `id` int(10) unsigned NOT NULL,
+                      `portfolio_id` int(10) unsigned NOT NULL,
+                      `media_id` int(10) unsigned NOT NULL,
+                      `private` tinyint(4) NOT NULL COMMENT '0-private;1-public',
+                      `private_end_date` date NOT NULL,
+                      `listing_id` int(10) unsigned NOT NULL,
+                      `buyer_id` int(10) unsigned NOT NULL
+                    ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1";
+        Yii::app()->db->createCommand($sql)->execute();
+        print_r('<pre>');print_r($sql);print_r('</pre>');   
+        
+        $sql = 'ALTER TABLE `x2_portfolio_to_media` ADD PRIMARY KEY (`id`)';
+        Yii::app()->db->createCommand($sql)->execute();
+        print_r('<pre>');print_r($sql);print_r('</pre>');
+        
+        $sql = 'ALTER TABLE `x2_portfolio_to_media` CHANGE `id` `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT;';
+        Yii::app()->db->createCommand($sql)->execute();
+        print_r('<pre>');print_r($sql);print_r('</pre>');
+                
+        $sql = "INSERT INTO `x2_modules` (`id`, `name`, `title`, `visible`, `menuPosition`, `searchable`, `toggleable`, `adminOnly`, `editable`, `custom`, `enableRecordAliasing`, `itemName`, `pseudoModule`) VALUES (NULL, 'portfolioMedia', 'PortfolioMedia', '1', '17', '0', '0', '0', '0', '0', '0', NULL, '0');";
+        Yii::app()->db->createCommand($sql)->execute();
+        print_r('<pre>');print_r($sql);print_r('</pre>');
+        
+         $sql = "INSERT INTO `x2_fields` ( `modelName`, `fieldName`, `attributeLabel`, `modified`, `custom`, `type`, `required`, `uniqueConstraint`, `safe`, `readOnly`, `linkType`, `searchable`, `relevance`, `isVirtual`, `defaultValue`, `keyType`, `data`, `description`) VALUES ('PortfolioMedia', 'media_id', 'Media ID', '0', '0', 'int', '0', '0', '1', '1', NULL, '0', NULL, '0', NULL, NULL, NULL, ''), ('PortfolioMedia', 'buyer_id', 'Buyer ID', '0', '0', 'int', '0', '0', '1', '0', NULL, '0', NULL, '0', NULL, NULL, NULL, ''), ('PortfolioMedia', 'listing_id', 'Listing ID', '0', '0', 'int', '0', '0', '1', '0', NULL, '0', NULL, '0', NULL, NULL, NULL, ''),  ('PortfolioMedia', 'private_end_date', 'Private date', '0', '0', 'date', '0', '0', '1', '0', NULL, '0', NULL, '0', NULL, NULL, NULL, ''), ('PortfolioMedia', 'private', 'Private', '0', '0', 'int', '0', '0', '1', '0', NULL, '0', NULL, '0', NULL, NULL, NULL, ''), ('PortfolioMedia', 'portfolio_id', 'Portfolio ID', '0', '0', 'int', '0', '0', '1', '0', NULL, '0', NULL, '0', NULL, NULL, NULL, ''), ( 'PortfolioMedia', 'id', 'ID', '0', '0', 'int', '0', '0', '1', '0', 'PRI', '0', NULL, '0', NULL, NULL, NULL, '')";
+        Yii::app()->db->createCommand($sql)->execute();
+        print_r('<pre>');print_r($sql);print_r('</pre>');
 
+        
+        print_r('<pre>');print_r('actionDataRoomFiles SUCCESSFULLY RUN');print_r('</pre>'); 
+
+    }
+
+
+//End of Class
 }

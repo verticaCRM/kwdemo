@@ -61,6 +61,59 @@ class X2LeadsController extends x2base {
         ));
     }
 
+    /**
+     * Convert Lead to Buyer or Seller
+     */
+    public function actionConvert($id) {
+
+        $targetClass = $_REQUEST['targetClass'];
+        $modelLead=$this->loadModel($id);
+
+       // printR($model->attributes);
+
+        $_POST['X2Leads'] = $modelLead->attributes;
+        $_POST['X2Leads']['id'] = '';
+
+     //   printR($_POST['X2Leads']);
+       // die('before post');
+        if(isset($_POST['X2Leads'])) {
+            switch ($targetClass)
+            {
+                case 'Contacts':
+
+                    $this->redirect(array('/contacts/createFromLeads', 'id' => $modelLead->id));
+                    break;
+                case 'Seller':
+                    $this->redirect(array('/seller/createFromLeads', 'id' => $modelLead->id));
+                    break;
+                default:
+                    $model=$this->loadModel($id);
+
+                    if(isset($_POST['X2Leads'])) {
+                        $model->setX2Fields($_POST['X2Leads']);
+                        if(!empty($model->associatedContacts))
+                            $model->associatedContacts=implode(', ',$model->associatedContacts);
+
+                        // $this->update($model,$temp);
+                        $model->save();
+                        $this->redirect(array('view','id'=>$model->id));
+                    }
+                    /* Set assignedTo back into an array only before re-rendering the input box with assignees
+                       selected */
+                    $model->assignedTo = array_map(function($n){
+                        return trim($n,',');
+                    },explode(' ',$model->assignedTo));
+
+                    $this->render('update',array(
+                        'model'=>$model,
+                    ));
+                    break;
+            }
+
+        }
+
+    }
+
 
     public function actionGetItems(){
         $sql = 'SELECT id, name as value FROM x2_x2leads WHERE name LIKE :qterm ORDER BY name ASC';

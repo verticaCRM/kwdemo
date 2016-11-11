@@ -19,7 +19,144 @@
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
  ********************************************************************************/
 
+function saveBuyerListingFiles (portfolio_id, listing_id, buyer_id)
+{
+    console.log('set_up_listing_files_permissions_btn');
+    form_data = $('#set_up_listing_files_permissions_frm').serialize();
+    urlAction = '/crm/index.php/site/saveBuyerListingFiles';
+    jQuery.ajax ({
+        // public function actionShowListingFiles($listing_id, $portfolio_id, $buyer_id)
+        //'url':'/crm/index.php/site/'+urlAction+'?listing_id='+listing_id+'&buyer_id='+portfolio_id,
+        url: urlAction+'?listing_id='+listing_id+'&portfolio_id='+portfolio_id+'&buyer_id='+buyer_id,
+        cache:false,
+        dataType: "json",
+        data:form_data,
+        success: function (data) {
+            if (data.status)
+            {
+                $('#listing_files_messages').addClass('message-success').removeClass('message-error');
+            }
+            else
+            {
+                $('#listing_files_messages').removeClass('message-success').addClass('message-error');
+            }
+            $('#listing_files_messages').html(data.message);
 
+            if (data.status)
+            {
+                setTimeout(function() {
+                    $('#buyer_listing_files').hide();
+                    $('#listing_name').html('');
+                    $('#listing_files_list').html('');
+                    $('#listing_files_messages').html('');
+                    $('#listing_files_messages').removeClass('message-success').removeClass('message-error');
+                }, 2000); // <-- time in milliseconds
+            }
+        }
+    });
+}
+
+function listingFiles (element, action_type, portfolio_id, listing_id, buyer_id, urlAction, event)
+{
+    event.preventDefault;
+
+    if (urlAction == '')
+    {
+      urlAction = 'getListingFiles';
+    }
+    $('#listing_name').html('Listing Files');
+    $('#listing_files_list').html('');
+    $('#listing_files_messages').html('');
+    $('#listing_files_messages').removeClass('message-success').removeClass('message-error');
+    $('#buyer_listing_files').show();
+    $('#listing_files_loading').show();
+    jQuery.ajax ({
+        // public function actionShowListingFiles($listing_id, $portfolio_id, $buyer_id)
+        //'url':'/crm/index.php/site/'+urlAction+'?listing_id='+listing_id+'&buyer_id='+portfolio_id,
+        'url': urlAction+'?listing_id='+listing_id+'&portfolio_id='+portfolio_id+'&buyer_id='+buyer_id,
+        'cache':false,
+        dataType: "json",
+        success: function (data) {
+
+            //show listing files
+            listing_name = data.listing_name;
+            $('#listing_name').html('Data room files available for list '+listing_name);
+            listing_files = data.files;
+            //console.log(listing_files.length);
+            output = '<form id="set_up_listing_files_permissions_frm">';
+            output += '<table class="items x2grid-resizable">';
+            output += '<thead>';
+            output += '<tr>';
+            output += '<th width="45">View</th>';
+            output += '<th>File</th>';
+            output += '<th width="110">Date</th>';
+            output += '</tr>';
+            output += '</thead>';
+            output += '<tbody>';
+            if (listing_files.length > 0)
+            {
+                $.each(listing_files, function(i, item) {
+
+                    if (i % 2 === 0)
+                    {
+                     /* we are even */
+                        tr_class = 'even';
+                    }
+                    else
+                    {
+                        /* we are odd */
+                        tr_class = 'odd';
+                    }
+
+                    item_expiration_date = '';
+                    item_available = '';
+
+                    if (typeof item.buyerDetails['media_id'] != 'undefined')
+                    {
+                        buyerDetails = item.buyerDetails;
+                        if (buyerDetails['private_end_date'] != '0000-00-00')
+                        {
+                            item_expiration_date = buyerDetails['private_end_date'];
+                        }
+
+                        if (buyerDetails['private'] == 1)
+                        {
+                            item_available = 'checked';
+                        }
+                    }
+                     output += '<tr class="'+tr_class+'">';
+                     output += '<td><input type="checkbox" '+item_available+' name="private_'+item.id+'" value="1"><input type="hidden" name="file_item[]" value="'+item.id+'"></td>';
+                     output += '<td><a href="/crm/index.php/media/view/'+item.id+'" target="_blank">'+item.fileName+'</a></td>';
+                     output += '<td><input type="text" class="datepicker" name="expiration_date_'+item.id+'" value="'+item_expiration_date+'" style="width:80px"></td>';
+                     output += '</tr>';
+                })
+                output += '<tr>';
+                output += '<td colspan="3"><input type="button" value="Assign permission" name="yt8" class="x2-button" id="set_up_listing_files_permissions_btn" onclick="saveBuyerListingFiles('+portfolio_id+','+listing_id+','+buyer_id+'); return false;" style="float: right;"></td>';
+                output += '</tr>';
+
+            }
+            else
+            {
+               output += '<tr><td colspan="3">Please add files by the listing profile</td></tr>';
+
+            }
+            output += '</tbody>';
+            output += '</table>';
+            output += '</form>';
+
+             $('#listing_files_list').html($.parseHTML(output));
+
+                $('#listing_files_list .datepicker').datepicker({
+
+                    weekStart: 1,
+                    autoclose: true
+                });
+            $('#listing_files_loading').hide();
+
+        }
+    });
+
+}
 function listingActions(element, action_type, projectId, url, event) {
 
     event.preventDefault;
@@ -47,7 +184,7 @@ function listingActions(element, action_type, projectId, url, event) {
 //console.log(fullUrl)
     if (confirm(message))
     {
-//console.log('/crm/index.php/site/'+urlAction+'?action_type='+action_type+'&porfolioId='+projectId);  
+        console.log('/crm/index.php/site/'+urlAction+'?action_type='+action_type+'&porfolioId='+projectId);
       jQuery.ajax ({
             'url':'/crm/index.php/site/'+urlAction+'?action_type='+action_type+'&porfolioId='+projectId,
             'cache':false,
@@ -218,6 +355,15 @@ InlineBuyersPortfolioWidget.prototype._setUpNewRelationshipsForm = function () {
         }
     });
 
+    $('#close_listing_files').click (function (event) {
+        event.preventDefault();
+        $('#buyer_listing_files').hide();
+        $('#listing_name').html('');
+        $('#listing_files_list').html('');
+        $('#listing_files_messages').html('');
+        $('#listing_files_messages').removeClass('message-success').removeClass('message-error');
+    });
+
     //search/filter for table
     $('.search_input').keyup(function(e){
         if(e.keyCode == 13)
@@ -239,6 +385,7 @@ InlineBuyersPortfolioWidget.prototype._setUpNewRelationshipsForm = function () {
     });
 
 
+
     this._setUpCreateFormSubmission ();
 };
 
@@ -258,6 +405,3 @@ InlineBuyersPortfolioWidget.prototype._init = function () {
 return InlineBuyersPortfolioWidget;
 
 }) ();
-
-
-

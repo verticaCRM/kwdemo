@@ -159,6 +159,7 @@ li.current_page_item { background-color:#d2d1d1;}
 	border:solid 2px #8BA8E0;
 	border-radius: 5px;
 	padding: 10px;	
+    clear: both;
 }
 
 #confidential_files a:hover {
@@ -215,6 +216,7 @@ li.current_page_item { background-color:#d2d1d1;}
     color: rgb(65, 64, 64);
     padding: 5px;
     border-bottom: 1px solid #eee;
+    text-transform: uppercase;
 }
 
 .child_category_container {
@@ -339,7 +341,6 @@ h3.panel-title {
 /**   Listing Search Result   **/
 
 .sidebar_content {
-    min-width:280px !important;
     max-width:285px;
     margin-top: 40px;
 }
@@ -427,7 +428,6 @@ h3.panel-title {
     padding: 5px 7px;
     font-size: 13px;
     font-style: italic;
-    margin-right: 10px;
     text-decoration: none;
 }
 
@@ -445,6 +445,7 @@ h3.panel-title {
 
 #top-horizontal-grey-div{
 	background-color:#f5f5f5; border:1px solid #ddd; padding:13px;min-height:165px !important;
+    overflow: auto;
 }
 
 .al-title { 
@@ -590,68 +591,44 @@ h4 {color:#333 !important;}
     float: left;
 }
 
-.searchlisting_bottom_category .accommodation_tourism {
-    background: red;
+.searchlisting_bottom_category .apparel {
+    background: #F2637B;
 }
 
-.searchlisting_bottom_category .automotive {
-    background: blue;
+.searchlisting_bottom_category .agriculture {
+    background: #63B2F2;
 }
 
-.searchlisting_bottom_category .beauty_health {
-    background: green;
+.searchlisting_bottom_category .constructionbusinesses {
+    background: #22E68A;
 }
 
-.searchlisting_bottom_category .business_property {
-    background: yellow;
+.searchlisting_bottom_category .hvac {
+    background: #D9F522;
 }
 
-.searchlisting_bottom_category .education_training {
-    background: orange;
+.searchlisting_bottom_category .internet_technologybusinesses {
+    background: #F5C011;
 }
 
-.searchlisting_bottom_category .food_hospitality {
-    background: brown;
+.searchlisting_bottom_category .manufacturingbusinesses {
+    background: #F00514;
 }
 
-.searchlisting_bottom_category .franchise {
+.searchlisting_bottom_category .retailingbusinesses {
     background: #90D4A2;
 }
 
-.searchlisting_bottom_category .home_garden {
+.searchlisting_bottom_category .servicesbusinesses {
+    background: #88EFFC;
+}
+
+.searchlisting_bottom_category .specialsituations {
     background: #D490C2;
 }
 
-.searchlisting_bottom_category .import_export_whole {
+.searchlisting_bottom_category .wholesale_distributionbusinesses {
     background: #D4C490;
-}
-
-.searchlisting_bottom_category .industrial_manufacturing {
-    background: #909AD4;
-}
-
-.searchlisting_bottom_category .leisure_entertainment {
-    background: #909AD4;
-}
-
-.searchlisting_bottom_category .professional {
-    background: #1EE3D9;
-}
-
-.searchlisting_bottom_category .retail {
-    background: #144A47;
-}
-
-.searchlisting_bottom_category .rural {
-    background: #B6CC39;
-}
-
-.searchlisting_bottom_category .services {
-    background: #CC8C39;
-}
-
-.searchlisting_bottom_category .transport_distribution {
-    background: #A7D490;
 }
 
 /**    End of background colours for Categories tags    **/
@@ -677,9 +654,7 @@ blockquote {
     font-weight: bold;
 }
 
-.for_sale_by_industry_category,
-.for_sale_by_industry_category:hover,
-.for_sale_by_industry_category:focus {
+.for_sale_by_industry_category {
     color: #000;
     text-decoration: none;
     font-size: 13px;
@@ -690,68 +665,51 @@ blockquote {
     display: inline-block;
 }
 
-.for_sale_by_industry_category.accommodation_tourism {
-    background: red;
+
+.for_sale_by_industry_category:hover,
+.for_sale_by_industry_category:focus {
+    color: #fff;
 }
 
-.for_sale_by_industry_category.automotive {
-    background: blue;
+
+.for_sale_by_industry_category.apparel {
+    background: #F2637B;
 }
 
-.for_sale_by_industry_category.beauty_health {
-    background: green;
+.for_sale_by_industry_category.agriculture {
+    background: #63B2F2;
 }
 
-.for_sale_by_industry_category.business_property {
-    background: yellow;
+.for_sale_by_industry_category.constructionbusinesses {
+    background: #22E68A;
 }
 
-.for_sale_by_industry_category.education_training {
-    background: orange;
+.for_sale_by_industry_category.hvac {
+    background: #D9F522;
 }
 
-.for_sale_by_industry_category.food_hospitality {
-    background: brown;
+.for_sale_by_industry_category.internet_technologybusinesses {
+    background: #F5C011;
 }
 
-.for_sale_by_industry_category.franchise {
+.for_sale_by_industry_category.manufacturingbusinesses {
+    background: #F00514;
+}
+
+.for_sale_by_industry_category.retailingbusinesses {
     background: #90D4A2;
 }
 
-.for_sale_by_industry_category.home_garden {
+.for_sale_by_industry_category.servicesbusinesses {
+    background: #88EFFC;
+}
+
+.for_sale_by_industry_category.specialsituations {
     background: #D490C2;
 }
 
-.for_sale_by_industry_category.import_export_whole {
+.for_sale_by_industry_category.wholesale_distributionbusinesses {
     background: #D4C490;
-}
-
-.for_sale_by_industry_category.industrial_manufacturing {
-    background: #909AD4;
-}
-
-.for_sale_by_industry_category.leisure_entertainment {
-    background: #909AD4;
-}
-
-.for_sale_by_industry_category.professional {
-    background: #1EE3D9;
-}
-
-.for_sale_by_industry_category.retail {
-    background: #144A47;
-}
-
-.for_sale_by_industry_category.rural {
-    background: #B6CC39;
-}
-
-.for_sale_by_industry_category.services {
-    background: #CC8C39;
-}
-
-.for_sale_by_industry_category.transport_distribution {
-    background: #A7D490;
 }
 
 /* Base for label styling */
