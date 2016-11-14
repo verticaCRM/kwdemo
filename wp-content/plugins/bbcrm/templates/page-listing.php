@@ -316,13 +316,13 @@ echo '<div class="portfoliostatus added">&#10003; ' .	__("This propery is in you
 	           
 	  <div class="pull-left" style="display:inline; width:60%;">
 			    <div class="al-title property-title entry-title <?php echo $cssclass;?>"><?php echo $generic_name; ?></div>	
-			<br><div class="al-price property_detail"><label><?php _e("", 'bbcrm');?></label><?php echo $listing->c_currency_id.$listing->c_listing_askingprice_c." + SAV"; ?></div>
+			<br><div class="al-price property_detail"><label><?php _e("", 'bbcrm');?></label><?php echo $listing->c_currency_id.$listing->c_listing_askingprice_c.""; ?></div>
 			<?php if ($categories != '') { ?><br><div class="al-cat property_detail"><label><?php _e("", 'bbcrm');?></label><?php echo $categories; ?></div><?php } ?>
 		</div>	
 		 <div class="pull-right" style="display:inline; width:40%;">
                 <div class="al-id property_detail" id="property_listing_id" data-id="<?php echo $listing_id;?>"><label><?php _e("ID Ref:", 'bbcrm');?></label>#<?php echo preg_replace("/[^0-9,.]/","",$listing->c_name_generic_c); ?></div>
-             <br><div class="al-region property_detail"><label><?php _e("Suburb:", 'bbcrm');?></label><?php echo $suberb;?></div>	
-             <br><div class="al-region property_detail"><label><?php _e("Territory:", 'bbcrm');?></label><?php echo $region;?></div>
+             <br><div class="al-region property_detail"><label><?php _e("City:", 'bbcrm');?></label><?php echo $suberb;?></div>	
+             <br><div class="al-region property_detail"><label><?php _e("State:", 'bbcrm');?></label><?php echo $region;?></div>
              <br><div class="al-status property_detail"><label><?php _e("Status:", 'bbcrm');?></label><?php echo $status; ?></div>
 <?php
 if(is_user_logged_in() && !$inportfolio){
@@ -775,9 +775,9 @@ if($brokerimg->fileName){
 					endif; ?>
 					<?php } ?>
 					<br clear=all><br>
-							<div class="property_detail"><label style="font-weight:100">Broker:</label> <?php echo $listingbroker->name ;?><label></label> <?php echo $listingbroker->c_mobile;?> / <?php echo $listingbroker->c_email;?></div>
-						    <div class="property_detail"><label style="font-weight:100">Head Office: 07 3368 4010</label> / <a href="mailto:reception@absbrisbane.com">reception@absbrisbane.com</a></div>
-							<br><div style=" display:inline-block; text-align:left; width:auto; height:auto;margin:10px 0; " class="property_detail"><label style="font-weight:normal !important;"><?php _e("Price for Sale ", 'bbcrm');?></label> <?php echo $currency_symbol." ".$amount;?> + SAV</div>
+<!--							<div class="property_detail"><label style="font-weight:100">Broker:</label> <?php echo $listingbroker->name ;?><label></label> <?php echo $listingbroker->c_mobile;?> / <?php echo $listingbroker->c_email;?></div> -->
+						    <div class="property_detail"><label style="font-weight:100">Head Office: <?php echo $bbcrm_option['bbcrm_loginbar_phone'];?></label> / <a href="mailto:kdwilliams@ccbsolutions.com"></a>kdwilliams@ccbsolutions.com</div>
+							<br><div style=" display:inline-block; text-align:left; width:auto; height:auto;margin:10px 0; " class="property_detail"><label style="font-weight:normal !important;"><?php _e("Price for Sale ", 'bbcrm');?></label> <?php echo $currency_symbol." ".$amount;?> </div>
 							</div>
 							
 <div style="margin-top:36px;"  >
@@ -785,7 +785,7 @@ if($brokerimg->fileName){
     <label style="border-bottom: 1px solid #b2b4b5; font-size: 25px; line-height:40px; font-weight:200; width:100% ;font-family: 'Roboto',Tahoma,Verdana,Segoe,sans-serif;" >Business Features / Snapshot</label></div>
     <div style="border-bottom: 1px dashed #b2b4b5;padding-top: 10px;  min-height:33px;"> 
      <label style="font-weight:400; text-align:left;display:inline-block;width: 120px; " >Price:</label>
-  <div style="font-weight:800;display:inline; width: auto; text-align:right;float:right; "><label ><?php _e("", 'bbcrm');?></label> <?php echo $currency_symbol." ".$amount;?> + SAV</div>
+  <div style="font-weight:800;display:inline; width: auto; text-align:right;float:right; "><label ><?php _e("", 'bbcrm');?></label> <?php echo $currency_symbol." ".$amount;?></div>
     </div>		
     
      <div style="border-bottom: 1px dashed #b2b4b5;padding-top: 10px; min-height:33px; "> 

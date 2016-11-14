@@ -21,7 +21,7 @@ $get_params = '_partial=1&_escape=0&c_is_real_estate=0';
 
 //Grab only listings with 'Active' and 'Needs Refresh' Sale Stages
 $sales_stage = 'Active__Needs Refresh';
-$get_params .= '&'.'c_sales_stage=:multiple:__'.$sales_stage;
+$get_params .= '&'.'c_sales_stage=:multiple:__'.urlencode($sales_stage);
 
 
 if(isset($_REQUEST["c_listing_franchise_c"]) && !empty($_REQUEST["c_listing_franchise_c"])){
@@ -35,7 +35,7 @@ if(isset($_REQUEST["c_listing_exclusive_c"]) && !empty($_REQUEST["c_listing_excl
 }
 
 if(isset($_REQUEST["c_listing_homebusiness_c"]) && !empty($_REQUEST["c_listing_homebusiness_c"])){
-    $home = 'c_listing_homebusiness_c='.$_REQUEST["c_listing_homebusiness_c"];
+    $home = 'c_listing_homebusiness_c='.urlencode($_REQUEST["c_listing_homebusiness_c"]);
     $get_params .= '&'.$home;
 }
 
@@ -47,12 +47,12 @@ if(isset($_REQUEST["id"]) && !empty($_REQUEST["id"])){
 }
 
 if(isset($_REQUEST["c_listing_region_c"]) && !empty($_REQUEST["c_listing_region_c"])){
-    $home = 'c_listing_region_c=:multiple:__'.$_REQUEST["c_listing_region_c"];
+    $home = 'c_listing_region_c=:multiple:__'.urlencode($_REQUEST["c_listing_region_c"]);
     $get_params .= '&'.$home;
 }
 
 if(isset($_REQUEST["c_listing_town_c"]) && !empty($_REQUEST["c_listing_town_c"])){
-    $home = 'c_listing_town_c='.$_REQUEST["c_listing_town_c"];
+    $home = 'c_listing_town_c='.urlencode($_REQUEST["c_listing_town_c"]);
     $get_params .= '&'.$home;
 }
 
@@ -63,7 +63,7 @@ LAST ADDED FIELDS
  */
 if(isset($_REQUEST["c_keyword_c"]) && !empty($_REQUEST["c_keyword_c"])){
     $keyword = trim($_REQUEST["c_keyword_c"]);
-    $get_params .= '&c_name_generic_c=:multiple:__'.$keyword;
+    $get_params .= '&c_name_generic_c=:multiple:__'.urlencode($keyword);
 }
 
 if(isset($_REQUEST["c_minimum_investment_c"]) && !empty($_REQUEST["c_minimum_investment_c"]) && isset($_REQUEST["c_maximum_investment_c"]) && !empty($_REQUEST["c_maximum_investment_c"]) )
@@ -103,7 +103,7 @@ global $wpdb;
 if(isset($_REQUEST["c_Broker"]) && !empty($_REQUEST["c_Broker"] && $_REQUEST["c_Broker"][0] != '' )){
     // print_r('<pre>');print_r($_REQUEST["c_Broker"]);print_r('</pre>');
     foreach($_REQUEST["c_Broker"] as $broker) {
-        $brokers[] = $broker;
+        $brokers[] = urlencode($broker);
         // $borkers_name = explode('_',$broker);
         // $results = $wpdb->get_results( "SELECT * FROM x2_brokers WHERE nameId='".$broker."'", OBJECT );
         // $brokers[] = $results[0]->userAlias;
@@ -125,7 +125,7 @@ if(isset($_REQUEST["c_businesscategories"]) && !empty($_REQUEST["c_businesscateg
     //$get_params .= '&c_businesscategories='. '%25'.urlencode($_REQUEST["c_businesscategories"]).'%25';
     foreach($_REQUEST["c_businesscategories"] as $k=>$v)
     {
-        $business_categories[] = trim($v);
+        $business_categories[] = urlencode(trim($v));
     }
 
     if (count($business_categories)>1)
@@ -179,6 +179,7 @@ if(isset($_REQUEST["c_listing_downpayment_c"]) && !empty($_REQUEST["c_listing_do
  *Make the apicall
  *and filter the the decoded json object
  */
+ //$get_params = urlencode($get_params);
 //print_r('<pre>');print_r($get_params);print_r('</pre>');
 $json = x2apicall(array('_class'=>'Clistings?'.$get_params));
 $decoded_json_All = json_decode($json);

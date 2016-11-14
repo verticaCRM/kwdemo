@@ -130,7 +130,7 @@ jQuery("#broker").change(function(){
 jQuery("#email").blur(function(){
 	jQuery("#emailerr").remove();		
 emailaddr = jQuery(this).val()
-jQuery.getJSON('<?php echo plugin_dir_url().'/bbcrm/_auth.php'; ?>',
+jQuery.get('<?php echo plugin_dir_url().'/bbcrm/_auth.php'; ?>',
 {query:	'AJAX',action: 'isvalidemail',email:emailaddr}, 
 	function(response){
 		if(!response){
