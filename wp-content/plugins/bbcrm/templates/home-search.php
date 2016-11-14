@@ -38,7 +38,6 @@
 	
 	$json = x2apicall(array('_class'=>'dropdowns/1000.json'));
 	$buscats = json_decode($json);
-	
 	$json = x2apicall(array('_class'=>'dropdowns/1080.json'));
 	$buscats_subctg = json_decode($json);
 ?>
@@ -230,4 +229,3 @@ selectCountyTxt = "<?php _e("Please select a city",'bbcrm');?>";
 	</div>
 </form>
 
-</div>

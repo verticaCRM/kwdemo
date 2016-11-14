@@ -260,6 +260,10 @@ function get_for_sale_by_industry($atts){
       }
       else
       {
+        if(!$class_cat)
+        {
+            $class_cat = 'uncategorized';
+        }
         $result .= '<a class="for_sale_by_industry_category '.$class_cat.'" data-cat="'.$v.'" href="/search/?c_businesscategories[]='.$v.'">'.$v.'('.$i_listings.')</a>';          
       }
 

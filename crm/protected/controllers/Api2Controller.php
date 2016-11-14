@@ -1199,6 +1199,7 @@ class Api2Controller extends CController {
 
         // Run comparisons:
         foreach($searchAttributes as $column => $value){
+	        $value = urldecode($value);
 	        if (strpos($value, 'between') !== false) {
 		        $between_parameters = explode('_', $value); // value will be like: between_200_300
 			    $criteria->addBetweenCondition($column,$between_parameters[1],$between_parameters[2]);
