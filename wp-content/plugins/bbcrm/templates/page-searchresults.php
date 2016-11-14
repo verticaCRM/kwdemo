@@ -347,6 +347,10 @@ if(count((array)$results) > 0 && $results->status != "404"  &&  $results_false_f
                     $cat = str_replace( '\/', '/', $cat);
                     if ($cat != '')
                     {
+                        if(!$class_cat)
+                        {
+                            $class_cat = 'uncategorized';
+                        }
                         $cats .='<a class="'.$class_cat.'" href="?c_businesscategories[]='.urlencode(stripslashes($cat)).'">'.$cat.'</a> ';
                     }
                 }

@@ -35,6 +35,7 @@ function checkFilterConditions()
     radius = $('#map_radius').val();
     business_type = $('#map_business_type').val();
     NetCashFlowDesired_start = $('#map_c_NetCashFlowDesired_start').val();
+    NetCashFlowDesired_end = $('#map_c_NetCashFlowDesired_end').val();
     buyer_status = $('#map_c_buyer_status').val();
 
 

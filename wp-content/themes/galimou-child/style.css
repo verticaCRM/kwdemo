@@ -203,6 +203,7 @@ li.current_page_item { background-color:#d2d1d1;}
 .sidebar_categories_container {
     background: #f8f8f8;
     border: 1px solid #eee;
+    font-size: 14px;
     margin-top: 5px;
 }
 
@@ -591,7 +592,7 @@ h4 {color:#333 !important;}
     float: left;
 }
 
-.searchlisting_bottom_category .apparel {
+.searchlisting_bottom_category .uncategorized {
     background: #F2637B;
 }
 
@@ -672,7 +673,7 @@ blockquote {
 }
 
 
-.for_sale_by_industry_category.apparel {
+.for_sale_by_industry_category.uncategorized {
     background: #F2637B;
 }
 
