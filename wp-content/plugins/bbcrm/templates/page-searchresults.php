@@ -263,12 +263,9 @@ echo do_shortcode('[listmenu menu="Sub Business" menu_id="sub_business" menu_cla
 <div class="col-md-3 sidebar_content">
     <?php get_sidebar('page'); ?>
 </div>
-
+</div>
 <div id="business_container" class="col-md-9 searchlists_container" >
-
-
 <?php
-
 
 global $wpdb;
 
