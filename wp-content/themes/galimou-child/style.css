@@ -283,6 +283,10 @@ select option {
     margin-bottom: 20px;
 }
 
+#business_map.panel-body {
+    padding: 0;
+}
+
 .panel-default {
     border: 0;
     border-radius: 0;

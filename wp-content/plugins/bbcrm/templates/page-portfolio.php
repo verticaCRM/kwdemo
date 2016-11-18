@@ -50,7 +50,9 @@ if(isset($_POST['action'])):
 	# POST uid = BUYER/USER ID (LEAD)
 	if("hide" ==$_POST['action']){
 		//parameters are regimented. Failure to include all params makes things go Bad.
-			$json = x2apipost(array('_method'=>'PATCH','_class'=>'Portfolio/'.$_POST["pid"].'.json','_data'=>array('c_release_status'=>'Hidden')));
+			// $json = x2apipost(array('_method'=>'PATCH','_class'=>'Portfolio/'.$_POST["pid"].'.json','_data'=>array('c_release_status'=>'Hidden')));
+			$json = x2apipost(array('_method'=>'PATCH','_class'=>'Portfolio/'.$_POST["pid"].'.json','_data'=>array('c_is_hidden'=>1)));
+		// var_dump($_POST['action']);
 //print_r($json);
 	   
 	}
@@ -141,8 +143,9 @@ $listingitem = json_decode($json);
 		
 		$isaddressrequested=($addreqstatus =="Requested")?1:0;
 		$isaddressreleased=($addreqstatus =="Released")?1:0;
-		$islistinghidden=($addreqstatus =="Hidden")?1:0;
+		$islistinghidden=($portfolioitem->c_is_hidden)?true:false;
 //echo $addreqstatus;
+		// echo '<pre>'; print_r($islistinghidden); echo '</pre>';
 
 //echo $listingitem->c_sales_stage.'<br>';
 if("Active" == $listingitem->c_sales_stage && !$islistinghidden){
