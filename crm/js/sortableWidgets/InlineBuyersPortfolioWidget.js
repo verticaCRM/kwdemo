@@ -184,7 +184,7 @@ function listingActions(element, action_type, projectId, url, event) {
 //console.log(fullUrl)
     if (confirm(message))
     {
-        console.log('/crm/index.php/site/'+urlAction+'?action_type='+action_type+'&porfolioId='+projectId);
+        // console.log('/crm/index.php/site/'+urlAction+'?action_type='+action_type+'&porfolioId='+projectId);
       jQuery.ajax ({
             'url':'/crm/index.php/site/'+urlAction+'?action_type='+action_type+'&porfolioId='+projectId,
             'cache':false,

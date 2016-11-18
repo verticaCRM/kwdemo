@@ -203,28 +203,30 @@ if(is_user_logged_in() ){
 		
 		$json = x2apicall(array('_class'=>'Portfolio/by:c_listing_id='.$listing->id.";c_buyer=".urlencode($buyer->nameId).".json"));
 		$prevlisting =json_decode($json);	
+
+		// echo '<pre>'; print_r($prevlisting); echo '</pre>';
 	
-		if(!$prevlisting->status || $prevlisting->status=="404"){
-		$data = array(
-			'name'	=>	'Portfolio listing for '.$listing->name,
-			'c_listing'	=>	$listing->name,
-			'c_listing_id'	=>	$listing->id,
-			'c_buyer'	=>	$buyer->nameId,
-			'c_buyer_id'	=>	$buyer->id,
-			'c_release_status'	=>	'Added',
-			'assignedTo'	=>	$buyerbroker->assignedTo,
-		);
-	
-		$json = x2apipost( array('_class'=>'Portfolio/','_data'=>$data ) );
-		$portfoliolisting =json_decode($json[1]);
-	
-		$json = x2apicall(array('_class'=>'Portfolio/'.$portfoliolisting->id.'.json'));
-		$portfoliorelationships =json_decode($json);
+		if($prevlisting->status=="404"){
+			$data = array(
+				'name'	=>	'Portfolio listing for '.$listing->name,
+				'c_listing'	=>	$listing->name,
+				'c_listing_id'	=>	$listing->id,
+				'c_buyer'	=>	$buyer->nameId,
+				'c_buyer_id'	=>	$buyer->id,
+				'c_release_status'	=>	'Added',
+				'assignedTo'	=>	$buyerbroker->assignedTo,
+			);
 		
-		$json = x2apicall( array('_class'=>'Portfolio/'.$portfoliorelationships->id."/relationships?secondType=Contacts" ) );
-		$rel = json_decode($json);
-	
-		$json = x2apipost( array('_method'=>'PUT','_class'=>'Portfolio/'.$portfoliolisting->id.'/relationships/'.$rel[0]->id.'.json','_data'=>$data ) );
+			$json = x2apipost( array('_class'=>'Portfolio/','_data'=>$data ) );
+			$portfoliolisting =json_decode($json[1]);
+		
+			$json = x2apicall(array('_class'=>'Portfolio/'.$portfoliolisting->id.'.json'));
+			$portfoliorelationships =json_decode($json);
+			
+			$json = x2apicall( array('_class'=>'Portfolio/'.$portfoliorelationships->id."/relationships?secondType=Contacts" ) );
+			$rel = json_decode($json);
+		
+			$json = x2apipost( array('_method'=>'PUT','_class'=>'Portfolio/'.$portfoliolisting->id.'/relationships/'.$rel[0]->id.'.json','_data'=>$data ) );
 	
 		}
 	}
