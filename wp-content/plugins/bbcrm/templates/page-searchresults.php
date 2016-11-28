@@ -360,37 +360,22 @@ if(count((array)$results) > 0 && $results->status != "404"  &&  $results_false_f
             $get_images_params['_order'] = '-id';
             $get_images_params['associationId'] = $searchlisting->id;
             //$get_images_params['associationType'] = 'clistings';	
-            $jsonImages = x2apicall(array('_class'=>'Media?_partial=1&_escape=0&_order=-id&associationId='. $searchlisting->id));
-            $thumbnailImages = json_decode($jsonImages);
-            //print_r('<pre>');print_r($thumbnailImages);print_r('</pre>');
+            
 
-            $json = x2apicall(array('_class'=>'Media/by:_order=-id;associationId='.$searchlisting->id.'.json'));
-            $thumbnail = json_decode($json);
-            //print_r('<pre>');print_r($thumbnail);print_r('</pre>');
-            if (is_array($thumbnailImages) && count($thumbnailImages) > 1)
-            {
-                foreach($thumbnailImages as $thumbnail_info)
-                {
-                    if (strpos($thumbnail_info->mimetype, 'image') !== false)
-                    {
-                        $thumbnailImg = $thumbnail_info;
-                        continue;
-                    }
-                }
-            }
-            elseif (is_array($thumbnailImages) && count($thumbnailImages) == 1)
-            {
-                $thumbnailImg = $thumbnailImages[0];
-            }
+        $result = $wpdb->get_results( "SELECT * FROM x2_actions LEFT JOIN x2_action_text ON x2_actions.id=x2_action_text.id WHERE x2_actions.associationType='clistings' AND x2_actions.type='attachment' AND x2_actions.associationId='".$searchlisting->id."' ORDER BY x2_actions.id DESC LIMIT 1" );
+        $result = $result[0];
+        $pic_name = explode(':', $result->text);
+        $pic_name = $pic_name[0];
+        //printR($results);
 
 
             $img_div = "<div class='searchlisting_featured_image'>";
 
-            if(!$thumbnailImg->fileName){
+            if(!$pic_name){
                 $img_div .= '';//<a href="/listing/'.sanitize_title($listing->c_name_generic_c).'" class="listing_link" data-id="'.$listing->id.'"><img src="'.plugin_dir_url(__DIR__).'images/noimage.png"></a>';
             }
             else {
-                $img_div .= '<a href="/listing/'.sanitize_title($searchlisting->c_name_generic_c).'--'.$searchlisting->id.'" class="listing_link" data-id="'.$searchlisting->id.'"><img src="'.get_bloginfo('url').'/crm/uploads/media/'.$thumbnailImg->uploadedBy.'/'.$thumbnailImg->fileName.'" style="width:100%" /></a>';
+                $img_div .= '<a href="/listing/'.sanitize_title($searchlisting->c_name_generic_c).'--'.$searchlisting->id.'" class="listing_link" data-id="'.$searchlisting->id.'"><img src="'.get_bloginfo('url').'/crm/uploads/media/'.$result->completedBy.'/'.$pic_name.'" style="width:100%" /></a>';
             }
 
             $img_div .= "</div>";

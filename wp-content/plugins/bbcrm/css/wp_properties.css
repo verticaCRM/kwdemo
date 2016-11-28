@@ -1973,7 +1973,7 @@ input.wpp_supermap_input_field_min, input.wpp_supermap_input_field_max {
 /* TwentyTen Specific */
 
 
-.portfoliostatus {width:960;color:#fff}
+.portfoliostatus {width:100%;color:#fff}
 
 .portfoliostatus.added {background: #3b4963; /* Old browsers */
 background: -moz-linear-gradient(left, #3b4963 35%, #59657a 61%, #98a0ac 83%, #d1d6da 100%); /* FF3.6+ */

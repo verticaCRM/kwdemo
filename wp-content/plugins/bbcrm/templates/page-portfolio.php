@@ -65,18 +65,18 @@ if("request" ==$_POST['action']){ //ADDRESS REQUEST
 	$json = x2apicall(array('_class'=>'Portfolio/'.$_POST["pid"].'.json'));
 	$portfolioitem = json_decode($json);
 
-if($portfolioitem->c_release_status== "Added"){	
-	$json = x2apipost(array('_method'=>'PATCH','_class'=>'Portfolio/'.$_POST["pid"].'.json','_data'=>array('c_release_status'=>'Requested')));
-	$request = json_decode($json);
-	$json = x2apicall(array('_class'=>'Portfolio/'.$_POST["pid"].'.json'));
-	$portfoliorelationships =json_decode($json);
-	
-	$json = x2apicall( array('_class'=>'Portfolio/'.$portfoliorelationships->id."/relationships?secondType=Contacts" ) );
-	$rel = json_decode($json);
-	$data = array(
-		'firstLabel'	=>	'Requested',
-	);
-	$json = x2apipost( array('_method'=>'PUT','_class'=>'Portfolio/'.$_POST["pid"].'/relationships/'.$rel[0]->id.'.json','_data'=>$data ) );
+	if($portfolioitem->c_release_status== "Added"){	
+		$json = x2apipost(array('_method'=>'PATCH','_class'=>'Portfolio/'.$_POST["pid"].'.json','_data'=>array('c_release_status'=>'Requested')));
+		$request = json_decode($json);
+		$json = x2apicall(array('_class'=>'Portfolio/'.$_POST["pid"].'.json'));
+		$portfoliorelationships =json_decode($json);
+		
+		$json = x2apicall( array('_class'=>'Portfolio/'.$portfoliorelationships->id."/relationships?secondType=Contacts" ) );
+		$rel = json_decode($json);
+		$data = array(
+			'firstLabel'	=>	'Requested',
+		);
+		$json = x2apipost( array('_method'=>'PUT','_class'=>'Portfolio/'.$_POST["pid"].'/relationships/'.$rel[0]->id.'.json','_data'=>$data ) );
 
 	}
 	$json = x2apicall(array('_class'=>'Clistings/'.$_POST["lid"].'.json'));
@@ -192,7 +192,12 @@ echo '<h3><a href="'.$permalink .'">'.$listingitem->c_name_generic_c.'</a></h3>'
 
 <br />
 <a href="<?php echo $permalink;?>" class="portfoliobutton" data-id="<?php echo $listingitem->id;?>" class="portfoliobutton"><?php _e('View Listing Details','bbcrm');?></a>
-<form method="post" style="display:inline"><input type=hidden name="uid" value="<?php echo $crmid;?>"><input type=hidden name="pid" value="<?php echo $portfolioitem->id;?>"><input type=hidden name="action" value="hide"><input type=submit value="Hide from Portfolio" class="portfoliobutton"></form> 
+<form method="post" style="display:inline">
+	<input type=hidden name="uid" value="<?php echo $crmid;?>">
+	<input type=hidden name="pid" value="<?php echo $portfolioitem->id;?>">
+	<input type=hidden name="action" value="hide">
+	<input type=submit value="Hide from Portfolio" class="portfoliobutton">
+</form> 
 
 <?php if(!$isaddressreleased){?>
 <form method="post" style="display:inline"><input type=hidden name="pid" value="<?php echo $portfolioitem->id; ?>"><input type=hidden name="lid" value="<?php echo $listingitem->id; ?>"><input type=hidden name="action" value="request"><input type=submit value="Request Address" class="portfoliobutton"></form>  

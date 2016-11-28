@@ -391,10 +391,17 @@ class BuyersPortfolioModel extends CModel {
                     break;
             }
         }
+
+
+        // $result = $wpdb->get_results( "SELECT * FROM x2_actions LEFT JOIN x2_action_text ON x2_actions.id=x2_action_text.id WHERE x2_actions.associationType='clistings' AND x2_actions.type='attachment' AND x2_actions.associationId='".$searchlisting->id."' ORDER BY x2_actions.id DESC LIMIT 1" );
+
         $sql =
-            'SELECT id, associationType, associationId, uploadedBy,fileName, name, nameId, createDate, lastUpdated, private, description, mimetype, filesize, dimensions, drive, thumbnail
-            FROM x2_media
-            WHERE associationType = "clistings" AND associationId = '.abs(intval($listingId));
+            "SELECT DISTINCT x2_media.id, x2_media.associationType, x2_media.associationId, x2_media.uploadedBy,x2_media.fileName, x2_media.name, x2_media.nameId, x2_media.createDate, x2_media.lastUpdated, x2_media.private, x2_media.description, x2_media.mimetype, x2_media.filesize, x2_media.dimensions, x2_media.drive, x2_media.thumbnail
+            FROM x2_media 
+            LEFT JOIN x2_actions on (x2_actions.associationId = x2_media.associationId) 
+            WHERE x2_media.associationId = ".abs(intval($listingId))." AND 
+                x2_actions.id = ( SELECT x2_action_text.id FROM x2_action_text WHERE x2_action_text.text LIKE CONCAT('%:', x2_media.id ,'%') 
+                                    )";
         if ($status)
         {
             $sql .= ' AND private = '.abs(intval($private));
@@ -482,7 +489,6 @@ class BuyersPortfolioModel extends CModel {
 
         return $result;
     }
-
 
 }
 

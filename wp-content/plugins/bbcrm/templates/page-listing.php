@@ -1,7 +1,15 @@
 <?php
 session_start();
 
+//ini_set('display_errors','on');
+//error_reporting(E_ALL);
+
+// echo '<pre>'; print_r($_REQUEST); echo '</pre>';
+
 $inportfolio = false;
+$is_portfolio_hidden = false;
+$is_requested = false;
+$is_released = false;
 $crmid = 0;
 
 $bbcrm_option = get_option( 'bbcrm_settings' );
@@ -11,6 +19,7 @@ if(isset($_POST["id"])){
 }elseif(isset($_SESSION["listingid"]) ){
 	$crmid = $_SESSION["listingid"];
 }else{}
+
 
 if($crmid>0){
 	$json = x2apicall(array('_class'=>'Clistings/'.$crmid.'.json'));
@@ -33,6 +42,9 @@ if($crmid>0){
 $listing = json_decode($json);
 
 // echo '<pre>'; print_r($listing); echo '</pre>';
+
+
+// Get the Tags
 $json = x2apicall(array('_class'=>'Clistings/'.$listing->id.'/tags'));
 $tags = json_decode($json);
 
@@ -41,12 +53,14 @@ foreach ($tags as $idx=>$tag){
 	$listingtags[] = urldecode(substr($tag, 1));
 }
 
+
+
 /* Failsafe. Need to move to create flow */
 if(empty($listing->c_listing_frontend_url) || $listing->c_listing_frontend_url != $listing->c_name_generic_c){
 $json = x2apipost( array('_method'=>'PUT','_class'=>'Clistings/'.$listing->id.'.json','_data'=>array('c_listing_frontend_url'=>'/listing/'.sanitize_title($listing->c_name_generic_c)."/") ) );
 }
 
-
+// echo '<pre>'; print_r($json); echo '</pre>';
 
 //Get The Broker
 if ($listing->c_assigned_user_id != '')
@@ -69,20 +83,9 @@ elseif ($listing->assignedTo != '')
 
 
 
-if(!$listingbroker->nameId){
-	$json = x2apicall(array('_class'=>'Brokers/by:nameId=House%20Broker_5.json'));
-	$listingbroker =json_decode($json);
-}
-if(!is_user_logged_in() ){	
-	
-	$json = x2apicall(array('_class'=>'Brokers/by:nameId='.urlencode($listingbroker->nameId).".json"));
-	$buyerbroker =json_decode($json);	
-
-	$json = x2apicall(array('_class'=>'Media/by:fileName='.$buyerbroker->c_profilePicture.".json"));
-	$brokerimg =json_decode($json);
-	
-}
 if(is_user_logged_in() ){	
+
+	// Get the Buyer
 	$json = x2apicall(array('_class'=>'Contacts/by:email='.urlencode($userdata->user_email).".json"));
 	$buyer =json_decode($json);
 
@@ -102,7 +105,7 @@ if(is_user_logged_in() ){
 	$brokerimg =json_decode($json);
 	
 	
-	//get all files that are allowed to see them
+	//Get all files that are allowed to see them
 	$data = array(
 			'listing_id'	=>	$listing->id,
 			'buyer_id'	=>	$buyer->id,		
@@ -121,7 +124,8 @@ if(is_user_logged_in() ){
 		}
 	}
 	
-	//get all filed for the listing
+
+	//Get all filed for the listing
 	$data = array(
 			'associationId'	=>	$listing->id,
 			'associationType' => "clistings",		
@@ -129,6 +133,7 @@ if(is_user_logged_in() ){
 	$json = x2apipost( array('_method'=>'GET','_class'=>'Media/','_data'=>$data ) );
 	$fileslisting =json_decode($json[1]);
 	
+
 	function get_file_icon ($mediaFile)
 	{
 		
@@ -161,8 +166,9 @@ if(is_user_logged_in() ){
 		}
 		return $mediaIcon;
 	}
-	//print_r('<pre>');print_r('buyerListingFiles');print_r('</pre>');
-	//print_r('<pre>');print_r($fileslisting);print_r('</pre>');
+
+
+
 	$currentListingFiles = array();
 	if (!empty($fileslisting))
 	{
@@ -219,6 +225,7 @@ if(is_user_logged_in() ){
 		
 			$json = x2apipost( array('_class'=>'Portfolio/','_data'=>$data ) );
 			$portfoliolisting =json_decode($json[1]);
+
 		
 			$json = x2apicall(array('_class'=>'Portfolio/'.$portfoliolisting->id.'.json'));
 			$portfoliorelationships =json_decode($json);
@@ -230,51 +237,109 @@ if(is_user_logged_in() ){
 	
 		}
 	}
-//Is this listing in the user's portfolio?	
+
+
+	if("request" ==$_POST['action']){ //ADDRESS REQUEST
+		$json = x2apicall(array('_class'=>'Portfolio/'.$_POST["pid"].'.json'));
+		$portfolioitem = json_decode($json);
+
+		if($portfolioitem->c_release_status== "Added"){	
+			$json = x2apipost(array('_method'=>'PATCH','_class'=>'Portfolio/'.$_POST["pid"].'.json','_data'=>array('c_release_status'=>'Requested')));
+			$request = json_decode($json);
+			$json = x2apicall(array('_class'=>'Portfolio/'.$_POST["pid"].'.json'));
+			$portfoliorelationships =json_decode($json);
+			
+			$json = x2apicall( array('_class'=>'Portfolio/'.$portfoliorelationships->id."/relationships?secondType=Contacts" ) );
+			$rel = json_decode($json);
+			$data = array(
+				'firstLabel'	=>	'Requested',
+			);
+			$json = x2apipost( array('_method'=>'PUT','_class'=>'Portfolio/'.$_POST["pid"].'/relationships/'.$rel[0]->id.'.json','_data'=>$data ) );
+
+		}
+		$json = x2apicall(array('_class'=>'Clistings/'.$_POST["lid"].'.json'));
+		$listing = json_decode($json);
+
+		
+			$data = array(
+			'actionDescription'	=>	'Address Request release for '.$listing->name.'<br>Buyer: '.$user->name.'<br>Listing Broker:'.$listing->assignedTo."<br><a href='".get_bloginfo('url')."/portfolio/?action=release&pid=".$_POST["pid"]."' class='x2-button'>Release address</a>",
+			'assignedTo'	=>	$listing->assignedTo,
+			'associationId' => $_POST["pid"],
+			'associationType' => 'portfolio',
+			'associationName' => $portfolioitem->name,
+			'subject'	=>	'Address Request release for '.$portfolioitem->name,
+		);	
+		$json = x2apipost( array('_class'=>'Portfolio/'.$_POST["pid"].'/Actions','_data'=>$data ) );
+
+		if($user->assignedTo != $listing->assignedTo){
+			$data['assignedTo']= $user->assignedTo;
+			$json = x2apipost( array('_class'=>'Portfolio/'.$_POST["pid"].'/Actions','_data'=>$data ) );
+		}
+
+	} // END IF ADDRESS REQUEST 
+
+
+
+
+
+
+	//Is this listing in the user's data room?	
 	$json = x2apicall(array('_class'=>'Portfolio/by:c_listing_id='.$listing->id.';c_buyer='.urlencode($buyer->nameId).'.json'));
-	
 	$portfoliolisting =json_decode($json);	
-	
+
+	// echo '<pre>'; print_r( $portfoliolisting ); echo '</pre>';
+
 	if($portfoliolisting->id){
 		$inportfolio=true;		
 	}
+
+	if($portfoliolisting->c_is_hidden){
+		$is_portfolio_hidden=true;		
+	}
+
+
+	if($portfoliolisting->c_release_status== "Released" || $portfoliolisting->c_release_status=="Requested"){
+		$is_requested = true;
+	}
+
+	if($portfoliolisting->c_release_status== "Released"){
+		$is_released = true;
+		$cssclass = 'nareq_released';
+		$generic_name = $listing->name_dba_c.' "'.$generic_name.'" ';
+		$address = $listing->listing_address_c."<br>";
+		$city = $listing->listing_city_c." ";
+		$postal = $listing->listing_postal_c."<br>";
+	}
+
+
+
 }
 //////////////////
 //print_r($listing); 
 
-		$status =($listing->c_sales_stage=="Active")?"For Sale":$listing->c_sales_stage;
-		$listing_id =$listing->id;
-		$listing_dateapproved = $listing->c_listing_date_approved_c;
-		$generic_name =$listing->c_name_generic_c;
-		$description =$listing->description;
-		$region=$listing->c_listing_region_c;
-		$town=$listing->c_listing_town_c;
-		$idref=$listing->c_listing_frontend_id_c;
-		$terms=$listing->c_listing_terms_c;
-		$currency_symbol=$listing->c_currency_id;
-		$grossrevenue=number_format($listing->c_financial_grossrevenue_c);
-		$amount=number_format($listing->c_listing_askingprice_c);
-		$downpayment=number_format($listing->c_listing_downpayment_c);
-		$ownercashflow=number_format($listing->c_ownerscashflow);
-		$brokername = $listing->assignedTo;
-		$brokerid = substr($listing->c_assigned_user_id, strpos($listing->c_assigned_user_id, "_") + 1);;
-		$categories = 	join(",",json_decode($listing->c_businesscategories)); //
+$status =($listing->c_sales_stage=="Active")?"For Sale":$listing->c_sales_stage;
+$listing_id =$listing->id;
+$listing_dateapproved = $listing->c_listing_date_approved_c;
+$generic_name =$listing->c_name_generic_c;
+$description =$listing->description;
+$region=$listing->c_listing_region_c;
+$town=$listing->c_listing_town_c;
+$idref=$listing->c_listing_frontend_id_c;
+$terms=$listing->c_listing_terms_c;
+$currency_symbol=$listing->c_currency_id;
+$grossrevenue=number_format($listing->c_financial_grossrevenue_c);
+$amount=number_format($listing->c_listing_askingprice_c);
+$downpayment=number_format($listing->c_listing_downpayment_c);
+$ownercashflow=number_format($listing->c_ownerscashflow);
+$brokername = $listing->assignedTo;
+$brokerid = substr($listing->c_assigned_user_id, strpos($listing->c_assigned_user_id, "_") + 1);;
+$categories = 	join(",",json_decode($listing->c_businesscategories)); //
 
 $_SESSION["viewed_listings"][$listing_id] = array("brokerid"=>$listingbroker->name,"listingname"=>$generic_name);
 
-	$cssclass = '';
+$cssclass = '';
 
-if( is_user_logged_in() ){
-if($portfoliolisting->c_release_status== "Released"){
-	$isaddressreleased = true;
-	$cssclass = 'nareq_released';
-	$generic_name = $listing->name_dba_c.' "'.$generic_name.'" ';
-	$address = $listing->listing_address_c."<br>";
-	$city = $listing->listing_city_c." ";
-	$postal = $listing->listing_postal_c."<br>";
-}
 
-}
 global $pagetitle;
 $pagetitle = "Listing: ".$listing->c_name_generic_c. " | ".get_bloginfo('name');
 
@@ -302,13 +367,13 @@ get_header();
 
 <?php 
 if( is_user_logged_in() ){
-if($portfoliolisting->c_release_status== "Deleted"){
-	echo '<div class="portfoliostatus deleted">&#10006; ' .	__("This propery was removed from your portfolio",'bbcrm') . "</div>";
-}elseif($isaddressreleased){
-echo '<div class="portfoliostatus released"> &#9733; ' .	__("The address of this business is available to you",'bbcrm') . "</div>";
-}elseif($inportfolio){
-echo '<div class="portfoliostatus added">&#10003; ' .	__("This propery is in your portfolio",'bbcrm') . "</div>";
-}
+	if($portfoliolisting->c_release_status== "Deleted"){
+		echo '<div class="portfoliostatus deleted">&#10006; ' .	__("This propery was removed from your portfolio",'bbcrm') . "</div>";
+	}elseif($is_released){
+		echo '<div class="portfoliostatus released"> &#9733; ' .	__("The address of this business is available to you",'bbcrm') . "</div>";
+	}elseif($inportfolio){
+		echo '<div class="portfoliostatus added">&#10003; ' .	__("This propery is in your portfolio",'bbcrm') . "</div>";
+	}
 }
 // echo '<pre>';print_r($listing); echo '</pre>';
 ?>
@@ -322,34 +387,46 @@ echo '<div class="portfoliostatus added">&#10003; ' .	__("This propery is in you
 			<?php if ($categories != '') { ?><br><div class="al-cat property_detail"><label><?php _e("", 'bbcrm');?></label><?php echo $categories; ?></div><?php } ?>
 		</div>	
 		 <div class="pull-right" style="display:inline; width:40%;">
-                <div class="al-id property_detail" id="property_listing_id" data-id="<?php echo $listing_id;?>"><label><?php _e("ID Ref:", 'bbcrm');?></label>#<?php echo preg_replace("/[^0-9,.]/","",$listing->c_name_generic_c); ?></div>
+                <div class="al-id property_detail" id="property_listing_id" data-id="<?php echo $listing_id;?>"><label><?php _e("ID Ref:", 'bbcrm');?></label>#<?php echo $listing_id; ?></div>
              <br><div class="al-region property_detail"><label><?php _e("City:", 'bbcrm');?></label><?php echo $suberb;?></div>	
              <br><div class="al-region property_detail"><label><?php _e("State:", 'bbcrm');?></label><?php echo $region;?></div>
              <br><div class="al-status property_detail"><label><?php _e("Status:", 'bbcrm');?></label><?php echo $status; ?></div>
 <?php
 if(is_user_logged_in() && !$inportfolio){
 ?>
-                                                <form method=post>
-                                                        <input type=submit style="color:#fff!important; font-weight:600; font-size:1.0em; background-color:#333; width:auto;text-align:center; padding:7px 8px 3px 8px; float:right; clear:right; height:auto; border-radius:4px; vertical-align:bottom; position:absolute: bottom:0; margin-bottom: 4px;" value="<?php _e('SAVE','bbcrm');?>" class=""   />
-                                                        <input type=hidden name="action" value="add_to_portfolio" />
-                                                        <input type=hidden name="id" value="<?php echo $listing->id;?>" />
-                                                </form>
+        <form method=post>
+                <input type=submit style="color:#fff!important; font-weight:600; font-size:1.0em; background-color:#333; width:auto;text-align:center; padding:7px 8px 3px 8px; float:right; clear:right; height:auto; border-radius:4px; vertical-align:bottom; position:absolute: bottom:0; margin-bottom: 4px;" value="<?php _e('SAVE','bbcrm');?>" class=""   />
+                <input type=hidden name="action" value="add_to_portfolio" />
+                <input type=hidden name="id" value="<?php echo $listing->id;?>" />
+        </form>
 <?php 
-}else{
-	echo '<div style="color:#fff; font-weight:600; font-size:1.0em; background-color:#333; width:auto;text-align:center; padding:7px 8px 3px 8px; float:right; clear:right; height:auto; border-radius:4px; vertical-align:bottom; position:absolute: bottom:0; margin-bottom: 4px;" ><span style="color:#fff;" class="glyphicon glyphicon-ok-circle"></span> <a style="color:#fff;" href="/registration/">REQUEST CA</a></div>';
+
 }
+
+if(is_user_logged_in() && $inportfolio && !$is_requested) {
+?>
+	<form method="post" style="display:inline">
+		<input type=hidden name="pid" value="<?php echo $portfoliolisting->id; ?>">
+		<input type=hidden name="lid" value="<?php echo $listing->id; ?>">
+		<input type=hidden name="action" value="request">
+		<button type="submit" style="color:#fff; font-weight:600; font-size:1.0em; background-color:#333; width:auto;text-align:center; padding:7px 8px 3px 8px; float:right; clear:right; height:auto; border-radius:4px; vertical-align:bottom; position:absolute: bottom:0; margin-bottom: 4px;" ><span style="color:#fff;" class="glyphicon glyphicon-ok-circle"></span> <span style="color:#fff;">REQUEST CA</span></button>
+	</form>  
+<?php
+
+}
+
 ?>     </div>
 
  </div>
  <?php if (!empty($currentListingFiles)) { ?>
-			           		<div id="confidential_files">
-					   		<h3 class=detailheader>Confidential Files</h3>
-					        <?php   foreach ($currentListingFiles as $mediaFile) { ?>
-						           <div class="property_detail" style="margin-bottom:3px;"><a target="_blank" href="/crm/uploads/media/<?php echo $mediaFile->uploadedBy; ?>/<?php echo $mediaFile->fileName; ?>"><?php echo $mediaFile->mediaIcon; ?> &nbsp;<?php echo $mediaFile->fileName; ?></a></div>	           		
-					        <?php   } ?>
-					        </div>
-			           
-			           <?php } ?> 
+	<div id="confidential_files">
+		<h3 class=detailheader>Confidential Files</h3>
+    <?php   foreach ($currentListingFiles as $mediaFile) { ?>
+           <div class="property_detail" style="margin-bottom:3px;"><a target="_blank" href="/crm/uploads/media/<?php echo $mediaFile->uploadedBy; ?>/<?php echo $mediaFile->fileName; ?>"><?php echo $mediaFile->mediaIcon; ?> &nbsp;<?php echo $mediaFile->fileName; ?></a></div>	           		
+    <?php   } ?>
+    </div>
+
+<?php } ?> 
 </div>
 
 </div>
@@ -377,39 +454,20 @@ echo "<img src='/crm/uploads/gallery/_".$image->id.".jpg' />";
     Galleria.run('.galleria', {
 		imageCrop:true,
 		height: .75,
-		//height: 1.5,
 		debug:false
-		/*extend: function(options) {
-		
-		       // Galleria.log(this) // the gallery instance
-		       // Galleria.log(options) // the gallery options
-		
-		        // listen to when an image is shown
-		        this.bind('image', function(e) {
-		
-		          //  Galleria.log(e) // the event object may contain custom objects, in this case the main image
-		          //  Galleria.log(e.imageTarget) // the current image
-		
-		            // lets make galleria open a lightbox when clicking the main image:
-		            $(e.imageTarget).click(this.proxy(function() {
-		               this.openLightbox({
-						  height: 600
-						});
-		            }));
-		        });
-		
-	}*/
 });
 
 </script>
 <?php
 endif;
 //print_r($listing);
- ?>		
+
+
+?>		
 
 
 <div class="row" style="">
-<div class="col-12 col-lg-7 col-md-6 col-sm-12">
+<div class="col-7 col-lg-7 col-md-6 col-sm-12">
 <?php
 
 	$detailsheader = __("Business Details", 'bbcrm');
@@ -417,52 +475,6 @@ if($isuserregistered && $inportfolio){
 	$detailsheader = __("Complete Business Profile", 'bbcrm');
 }
  ?>
-					<!--<h3 class="detailheader theme-color" onclick='jQuery("#propertydetails ").slideToggle()'><?php echo $detailsheader;?></h3>-->
-
-
-							<div id=propertydetails class="property_details_div">
-		
-						  <div class="property_details">
-							<!--<div class="property_detail"><label><?php _e("Listed on:", 'bbcrm');?></label> <?php echo date('F j, Y',$listing_dateapproved); ?></div>
-							
-							<div class="property_detail"><label><?php _e("Gross Revenue:", 'bbcrm');?></label> <?php echo $currency_symbol." ".$grossrevenue;?></div>
-							<div class="property_detail"><label><?php _e("Down Payment:", 'bbcrm');?></label> <?php echo $currency_symbol." ".$downpayment;?></div>
-							<div class="property_detail"><label><?php _e("Terms:", 'bbcrm');?></label> <?php echo $terms;?></div>
-							<div class="property_detail"><label><?php _e("Owner's Cash Flow:", 'bbcrm');?></label> <?php echo $currency_symbol." ".$ownercashflow;?></div>-->
-							
-							
-						<!-- 	<div class="property_detail  theme-color" style="cursor:pointer;width:100%;" onclick='jQuery("#brokerdetails ").slideToggle()'><?php _e('Listing Broker','bbcrm');?>  -->
-						<div id=brokerdetails class="">
-			
-<!-- <?php if(is_user_logged_in()){ 
-//print_r($buyer);
-?>
-							<form><input type="button" id="contactlistingbroker" class="contactbroker" data-buyerid="<?php _e($buyer->id);?>" data-listingid="<?php _e($listing->id);?>" data-portfolioid="<?php _e($portfoliolisting->id);?>" name="contact" value="Contact Me"></form>
-							<br clear=all><br>
-<?php } ?> -->
-						</div>
-                           </div>
-						
-						
-						<!--<?php if(is_user_logged_in()){ 
-
-$json = x2apicall(array('_class'=>'Media/by:fileName='.$buyerbroker->c_profilePicture.".json"));
-$brokerimg =json_decode($json);
-?>
-						<div class="property_detail"><label><?php _e("Your Broker",'bbcrm');?></label></div>
-<?php
-if($brokerimg->fileName){
-?>	
-						<img src="<?php echo "http://".$apiserver."/uploads/media/".$brokerimg->uploadedBy."/".$brokerimg->fileName;?>" height=170 align=right />
-<?php } ?>
-						<div class="property_detail"><label>Buyer Broker: </label>&nbsp;<?php echo $buyerbroker->name;?></div>
-						<div class="property_detail"><label>Cell phone: </label>&nbsp;<?php echo $buyerbroker->c_mobile;?></div>
-						<div class="property_detail"><label>Office phone: </label>&nbsp;<?php echo $buyerbroker->c_office;?></div>-->
-                       
-
-						<!--<form><input type="button" id="contactbuyerbroker" class="contactbroker" data-buyerid="<?php echo $buyer->id;?>" data-listingid="<?php _e($listing->id);?>" data-portfolioid="<?php echo $portfoliolisting->id ;?>" name="contact" value="Contact Me"></form>
-<?php } ?>						
-<?php echo wp_get_attachment_image( 5575, 'full', 0, array('class'=>'contactbroker','data-buyerid'=>$buyer->id,'data-listingid'=>$listing->id,'data-portfolioid'=>$portfoliolisting->id) ); ?>	-->
 						
 						
 <div class="property_detail">
@@ -471,7 +483,7 @@ if($brokerimg->fileName){
 							
 					<?php if( $inportfolio ): 
 					//print_r($listing);
-					if($isaddressreleased){
+					if($is_released){
 					?>
                     <br />
 					<h4 class="detailheader theme-color"><?php _e("Location", 'bbcrm');?></h4>
@@ -778,32 +790,13 @@ if($brokerimg->fileName){
 					<?php } ?>
 					<br clear=all><br>
 <!--							<div class="property_detail"><label style="font-weight:100">Broker:</label> <?php echo $listingbroker->name ;?><label></label> <?php echo $listingbroker->c_mobile;?> / <?php echo $listingbroker->c_email;?></div> -->
-						    <div class="property_detail"><label style="font-weight:100">Head Office: <?php echo $bbcrm_option['bbcrm_loginbar_phone'];?></label> / <a href="mailto:kdwilliams@ccbsolutions.com"></a>kdwilliams@ccbsolutions.com</div>
-							<br><div style=" display:inline-block; text-align:left; width:auto; height:auto;margin:10px 0; " class="property_detail"><label style="font-weight:normal !important;"><?php _e("Price for Sale ", 'bbcrm');?></label> <?php echo $currency_symbol." ".$amount;?> </div>
-							</div>
-							
-<div style="margin-top:36px;"  >
-
-    <label style="border-bottom: 1px solid #b2b4b5; font-size: 25px; line-height:40px; font-weight:200; width:100% ;font-family: 'Roboto',Tahoma,Verdana,Segoe,sans-serif;" >Business Features / Snapshot</label></div>
-    <div style="border-bottom: 1px dashed #b2b4b5;padding-top: 10px;  min-height:33px;"> 
-     <label style="font-weight:400; text-align:left;display:inline-block;width: 120px; " >Price:</label>
-  <div style="font-weight:800;display:inline; width: auto; text-align:right;float:right; "><label ><?php _e("", 'bbcrm');?></label> <?php echo $currency_symbol." ".$amount;?></div>
-    </div>		
-    
-     <div style="border-bottom: 1px dashed #b2b4b5;padding-top: 10px; min-height:33px; "> 
-     <label style="font-weight:400; float:left; " >Trial:</label>
-  <div style="font-weight:400; float:right; "></div>
-    </div>		
-    
-    
+				    <div class="property_detail"><label style="font-weight:100">Head Office: <?php echo $bbcrm_option['bbcrm_loginbar_phone'];?></label> / <a href="mailto:kdwilliams@ccbsolutions.com"></a>kdwilliams@ccbsolutions.com</div>
+					<div style=" display:inline-block; text-align:left; width:auto; height:auto;margin:10px 0; " class="property_detail"><label style="font-weight:normal !important;"><?php _e("Price for Sale ", 'bbcrm');?></label> <?php echo $currency_symbol." ".$amount;?> </div>
 </div>
 
-<div class="col-12 col-lg-5 col-md-6 col-sm-12" style="background-color: #fff !important; margin-top:25px; ">
 
-		<?php
-			// echo '<pre>'; print_r($buyerbroker); echo '</pre>';
 
-		?>
+<div class="col-5 col-lg-5 col-md-6 col-sm-12" style="background-color: #fff !important; margin-top:25px; ">
 
 			<?php if ($buyerbroker->name != '') { ?>
 			<div class="panel panel-default">
@@ -827,23 +820,7 @@ if($brokerimg->fileName){
 							<li>Phone: <strong><?php echo $buyerbroker->c_office;?></strong></li>
 							<li>Mobile: <strong><?php echo $buyerbroker->c_mobile;?></strong></li>
 							<li>Profile: <a href="javascript: document.getElementById('broker_frm_'+<?php echo $buyerbroker->id; ?>).submit();"><strong>view profile</strong></a></li>
-							<li class="icon-links savelisting notsaved">
-							<?php
-if(is_user_logged_in() && !$inportfolio){
-?>
-                                                <form method=post>
-                                                        <input type=submit style="color:#ffffff !important; font-weight:600; font-size:1.0em; background-color:#333; width:auto;text-align:center; padding:7px 8px 3px 8px; float:right; clear:right; height:auto; border-radius:4px; border:0; vertical-align:bottom; position:absolute: bottom:0; margin-bottom: 4px;" value="SAVE"  />
-                                                        <input type=hidden name="action" value="add_to_portfolio" />
-                                                        <input type=hidden name="id" value="<?echo $listing->id;?>" />
-                                                </form>
-<?php 
-}else{
-	echo '<div class="btn btn-primary" style="color:#fff; width:auto;text-align:center; font-weight:600; font-size:.9em; background-color:#333; auto; padding:7px 8px 3px 8px; clear:right; height:auto; border-radius:4px;" > <span style="color:#fff;" class="glyphicon glyphicon-ok-circle"></span> <a style="color:#fff;" href="/registration/">REQUEST CA</a></div>';
-}
-?>
-							</li>
-							<!--<li class="icon-links savelisting notsaved"><div class="btn btn-primary" style="color:#fff; width:auto;text-align:center; font-weight:600; font-size:.9em; background-color:#333; auto; padding:7px 8px 3px 8px; clear:right; height:auto; border-radius:4px;" > <span style="color:#fff;" class="glyphicon glyphicon-ok-circle"></span> <a style="color:#fff;" href="/registration/">SAVE / REQUEST CA</a></div></li>-->
-							
+							<li class="icon-links savelisting notsaved"></li>							
 						</ul>
 				</div>
 			</div>
@@ -861,7 +838,7 @@ if(is_user_logged_in() && !$inportfolio){
 					$hasMap = false;
 					$hasCoordinates = false;
 					$mapsLink = '';
-					if($inportfolio && $isaddressreleased )
+					if($inportfolio && $is_released )
 					{
 						if ($listing -> c_listing_longitude_c != '' && $listing -> c_listing_latitude_c != '')
 						{
@@ -912,6 +889,7 @@ if(is_user_logged_in() && !$inportfolio){
 				</div>
 			</div>
 			<?php if ($hasMap) { ?>
+
 			<div class="panel panel-default" >
 				<div style="background-color: #fff !important;" class="panel-heading">
 					<h3 class="panel-title">
@@ -920,55 +898,72 @@ if(is_user_logged_in() && !$inportfolio){
 				</div>
 				<div class="panel-body" id="business_map" style="height: 350px;">
 					<?php if ($hasCoordinates) { ?>
-					<script>
-						//function initMap() {
-					        var myLatLng = {lat: <?php echo $listing -> c_listing_latitude_c; ?>, lng: <?php echo $listing -> c_listing_longitude_c; ?>};
-					
-					        var map = new google.maps.Map(document.getElementById('business_map'), {
-					          zoom: 16,
-					          center: myLatLng
-					        });
-					
-					        var marker = new google.maps.Marker({
-					          position: myLatLng,
-					          map: map,
-					          title: '<?php echo $generic_name; ?>'
-					        });
-					     // }
-				    </script>
-				    <!--<script src="https://maps.googleapis.com/maps/api/js?callback=initMap" async defer></script>-->
-					<?php } else { ?>
-					<script>
-						var geocoder = new google.maps.Geocoder();
-				            geocoder.geocode({ 'address': '<?php echo $mapsAddress; ?>' }, function (results, status) {
-					            if (status == google.maps.GeocoderStatus.OK) {
-				                    var latitude = results[0].geometry.location.lat();
-				                    var longitude = results[0].geometry.location.lng();
-				                    
-				                     var myLatLng = {lat: latitude, lng: longitude};
-									    var map = new google.maps.Map(document.getElementById('business_map'), {
-								          zoom: 10,
-								          center: myLatLng
-								        });
-								
-								        var marker = new google.maps.Marker({
-								          position: myLatLng,
-								          map: map,
-								          title: '<?php echo $generic_name; ?>'
-								        });
-								        
-				                } else {
-				                   
-				                }
-						    });
+							<script>
+						        var myLatLng = {lat: <?php echo $listing -> c_listing_latitude_c; ?>, lng: <?php echo $listing -> c_listing_longitude_c; ?>};
 						
-					</script>		
+						        var map = new google.maps.Map(document.getElementById('business_map'), {
+						          zoom: 16,
+						          center: myLatLng
+						        });
+						
+						        var marker = new google.maps.Marker({
+						          position: myLatLng,
+						          map: map,
+						          title: '<?php echo $generic_name; ?>'
+						        });
+						    </script>
+
+					<?php } else { ?>
+								<script>
+									var geocoder = new google.maps.Geocoder();
+							            geocoder.geocode({ 'address': '<?php echo $mapsAddress; ?>' }, function (results, status) {
+								            if (status == google.maps.GeocoderStatus.OK) {
+							                    var latitude = results[0].geometry.location.lat();
+							                    var longitude = results[0].geometry.location.lng();
+							                    
+							                     var myLatLng = {lat: latitude, lng: longitude};
+												    var map = new google.maps.Map(document.getElementById('business_map'), {
+											          zoom: 10,
+											          center: myLatLng
+											        });
+											
+											        var marker = new google.maps.Marker({
+											          position: myLatLng,
+											          map: map,
+											          title: '<?php echo $generic_name; ?>'
+											        });
+											        
+							                } else {
+							                   
+							                }
+									    });
+									
+								</script>		
 					<?php } ?>
 				</div>
 			</div>
 			<?php } ?>
 
 </div>
+
+
+							
+<div style="margin-top:36px;"  >
+
+    <label style="border-bottom: 1px solid #b2b4b5; font-size: 25px; line-height:40px; font-weight:200; width:100% ;font-family: 'Roboto',Tahoma,Verdana,Segoe,sans-serif;" >Business Features / Snapshot</label></div>
+    <div style="border-bottom: 1px dashed #b2b4b5;padding-top: 10px;  min-height:33px;"> 
+     <label style="font-weight:400; text-align:left;display:inline-block;width: 120px; " >Price:</label>
+  <div style="font-weight:800;display:inline; width: auto; text-align:right;float:right; "><label ><?php _e("", 'bbcrm');?></label> <?php echo $currency_symbol." ".$amount;?></div>
+    </div>		
+    
+     <div style="border-bottom: 1px dashed #b2b4b5;padding-top: 10px; min-height:33px; "> 
+     <label style="font-weight:400; float:left; " >Trial:</label>
+  <div style="font-weight:400; float:right; "></div>
+    </div>		
+    
+    
+</div>
+
 						</div><!-- .entry-content -->
 
 					</div><!-- #post-## -->

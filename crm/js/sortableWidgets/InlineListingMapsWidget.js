@@ -34,8 +34,8 @@ function checkFilterConditions()
     address = $('#map_c_listing_address_c').val();
     radius = $('#map_radius').val();
     business_type = $('#map_business_type').val();
-    NetCashFlowDesired_start = $('#map_c_NetCashFlowDesired_start').val();
-    NetCashFlowDesired_end = $('#map_c_NetCashFlowDesired_end').val();
+    NetCashFlowDesired_start = parseInt( $('#map_c_NetCashFlowDesired_start').val() );
+    NetCashFlowDesired_end = parseInt( $('#map_c_NetCashFlowDesired_end').val() );
     buyer_status = $('#map_c_buyer_status').val();
 
 
@@ -47,13 +47,13 @@ function checkFilterConditions()
     {
         radius = '';
     }
-    if(typeof ownerscashflow_start == 'undefined')
+    if(typeof NetCashFlowDesired_start == 'undefined')
     {
-        ownerscashflow_start = '';
+        NetCashFlowDesired_start = '';
     }
-    if(typeof ownerscashflow_end == 'undefined')
+    if(typeof NetCashFlowDesired_end == 'undefined')
     {
-        ownerscashflow_end = '';
+        NetCashFlowDesired_end = '';
     }
     if(typeof buyer_status == 'undefined')
     {
@@ -90,8 +90,8 @@ function matchFilter(marker_position)
 
     address = $('#map_c_listing_address_c').val();
     radius = $('#map_radius').val();
-    NetCashFlowDesired_start = $('#map_c_NetCashFlowDesired_start').val();
-    NetCashFlowDesired_end = $('#map_c_NetCashFlowDesired_end').val();
+    NetCashFlowDesired_start = parseInt( $('#map_c_NetCashFlowDesired_start').val() );
+    NetCashFlowDesired_end = parseInt( $('#map_c_NetCashFlowDesired_end').val() );
     buyer_status = $('#map_c_buyer_status').val();
 
     if(typeof address == 'undefined')
@@ -118,12 +118,11 @@ function matchFilter(marker_position)
     markerDetails = listingsArray[marker_position];
 
     is_match = true;
-    if (NetCashFlowDesired_start != '' && ownerscashflow_end != '')
+    if (NetCashFlowDesired_start != '' && NetCashFlowDesired_end != '')
     {
         if (parseFloat(markerDetails.ownerscashflow) >= parseFloat(NetCashFlowDesired_start) && parseFloat(markerDetails.ownerscashflow) <= parseFloat(NetCashFlowDesired_end))
         {
             is_match = true;
-            console.log('IN ownerscashflow interval');
         }
         else
         {
@@ -135,7 +134,6 @@ function matchFilter(marker_position)
         if (markerDetails.c_buyer_status == buyer_status)
         {
             is_match = true;
-            console.log('IN buyer_status interval');
         }
         else
         {
@@ -154,36 +152,21 @@ function listMarkers(markers,kmRadius, infoWindowContent, infoWindow, marker, i,
         (function(i) { // protects i in an immediately called function
             if (matchFilter(i))
             {
-                //console.log( ' IS matchFilter');
                 $.getJSON('http://maps.googleapis.com/maps/api/geocode/json?address='+markers[i]+'&sensor=false', null, function (data) {
                     if (typeof data.results[0] == 'undefined')
                     {
-                        //console.log('no location');
-                        //console.log(data.results);
                         return false;
                     }
                     var position = data.results[0].geometry.location;
-                    // var latlng = new google.maps.LatLng(p.lat, p.lng);
-                    // console.log(markers[i]);
-
-                    //console.log(primary_ponit);
-                    //console.log(kmRadius);
-                    // console.log(position);
-                    // bounds.extend(position);
 
                     if (pointInCircle(position, kmRadius, primary_ponit))
                     {
-                        //console.log(' inside radius');
-                        //  console.log(markers[i]);
-                        // console.log(position);
                         marker = new google.maps.Marker({
                             position: position, //it will place marker based on the addresses, which they will be translated as geolocations.
                             map: map,
                             title: markers[i]
                         });
-                        //console.log(infoWindowContent);
-                        //console.log(i);
-                        //console.log(infoWindowContent[i]);
+
                         // Allow each marker to have an info window
                         google.maps.event.addListener(marker, 'click', (function(marker, i) {
                             return function() {
@@ -194,7 +177,6 @@ function listMarkers(markers,kmRadius, infoWindowContent, infoWindow, marker, i,
 
                         markersArray.push(marker);
 
-                        //console.log( ' INSide radius');
                     }
                     else
                     {
@@ -222,7 +204,6 @@ function initMap()
         center: latlng
     }
     map = new google.maps.Map(document.getElementById('listing_map'), mapOptions);
-    console.log('address - ' + address);
     // codeAddress(address);//call the function
     $.ajax({
         url:"http://maps.googleapis.com/maps/api/geocode/json?address="+address+"&sensor=false",
@@ -260,8 +241,6 @@ function initMap()
     var onChangeHandler = function() {
         //check filter conditions, if are ok make the filter
         filterErrors = checkFilterConditions();
-        console.log('filterErrors');
-        console.log(filterErrors);
         if (filterErrors == '')
         {
             kmRadius = $("#map_radius").val();
@@ -289,10 +268,6 @@ function initMap()
 
                     markersArray.push(marker);
 
-                    //console.log('kmRadius ' + kmRadius);
-                    //console.log('address ' + address);
-                    //console.log('primary_ponit ');
-                    //console.log(primary_ponit);
                     clearOverlays();
                     listMarkers(markers, kmRadius, infoWindowContent, infoWindow, marker, i, markersArray);
                 }
@@ -333,12 +308,6 @@ function codeAddress(address)
 
 function pointInCircle(point, radius, center)
 {
-    /* console.log('pointInCircle');
-     console.log(point);
-     console.log(center);
-     console.log(radius);
-     */
-
     var latLngCenter = new google.maps.LatLng(center.lat, center.lng);
     var latLngPoint = new google.maps.LatLng(point.lat, point.lng);
 
@@ -348,22 +317,13 @@ function pointInCircle(point, radius, center)
     computeDistanceMiles = (computeDistance * 0.000621371192).toFixed(1);
 
     //name="map_radius_unit"
-    /*console.log('computeDistance');
-     console.log(radius);
-     console.log(computeDistance);
-     console.log(map_radius_unit);
-     console.log(computeDistanceKm);
-     console.log(computeDistanceMiles);*/
-
     map_radius_unit = $('#map_radius_unit').val();
     if (map_radius_unit == 'Miles')
     {
-        //console.log('check by Miles');
         return (parseFloat(computeDistanceMiles) <= parseFloat(radius));
     }
     else
     {
-        //console.log('check by Km');
         return (parseFloat(computeDistanceKm) <= parseFloat(radius));
     }
 
@@ -457,7 +417,6 @@ InlineListingMapsWidget.prototype._setUpCreateFormSubmission = function () {
     var that = this;
 
     $('#add-listingMaps-button').on('click', function () {
-        //console.log('add-listingMaps-button');
         that._submitCreateRelationshipForm ();
         return false;
     });

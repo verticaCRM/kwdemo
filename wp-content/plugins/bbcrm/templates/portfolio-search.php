@@ -14,8 +14,9 @@
 	<?php
 	if($a['addbutton']===true){ 
 	?>
-	<input type=submit name="add_to_portfolio" value="Add" class="theme-background" style="margin-left:25px; padding:4px 8px;border-radius:8px;border:0;" />
+		<input type=submit name="add_to_portfolio" value="Add" class="theme-background" style="margin-left:25px; padding:4px 8px;border-radius:8px;border:0;" />
 	<?php } ?>
+	
 	</form>
 
 
